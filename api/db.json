@@ -1,0 +1,24 @@
+{
+  "users": [
+    {
+      "id": "1",
+      "name": "Admin LaptopZone",
+      "email": "admin@laptopzone.vn",
+      "password": "admin123",
+      "role": "admin",
+      "phone": "0901234567",
+      "address": "123 Nguyễn Huệ, Quận 1, TP.HCM",
+      "avatar": ""
+    },
+    {
+      "id": "2",
+      "name": "Nguyễn Văn An",
+      "email": "user@laptopzone.vn",
+      "password": "user123",
+      "role": "user",
+      "phone": "0912345678",
+      "address": "456 Lê Lợi, Quận 3, TP.HCM",
+      "avatar": ""
+    }
+  ]
+}
