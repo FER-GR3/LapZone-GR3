@@ -1,13 +1,18 @@
 import React from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useCart } from '../context/CartContext';
+
 const Header = () => {
     const { user, logout } = useAuth();
+    const { cartCount } = useCart();
     const navigate = useNavigate();
+
     const handleLogout = () => {
         logout();
         navigate('/');
     };
+
     return (
         <nav className="navbar navbar-expand-lg navbar-dark sticky-top" style={{ background: 'linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%)', boxShadow: '0 2px 20px rgba(0,0,0,0.3)' }}>
             <div className="container">
@@ -18,9 +23,11 @@ const Header = () => {
                         <span className="fw-bold fs-5 text-white">Zone</span>
                     </div>
                 </Link>
+
                 <button className="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
                     <span className="navbar-toggler-icon"></span>
                 </button>
+
                 <div className="collapse navbar-collapse" id="navMenu">
                     <ul className="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-3">
                         <li className="nav-item">
@@ -42,11 +49,18 @@ const Header = () => {
                             </ul>
                         </li>
                     </ul>
+
                     <div className="d-flex align-items-center gap-3">
                         {/* Giỏ hàng */}
                         <Link to="/cart" className="btn btn-outline-light btn-sm position-relative">
                             <i className="bi bi-cart3 fs-5"></i>
+                            {cartCount > 0 && (
+                                <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                    {cartCount}
+                                </span>
+                            )}
                         </Link>
+
                         {/* Người dùng đăng nhập */}
                         {user ? (
                             <div className="dropdown">
@@ -79,4 +93,5 @@ const Header = () => {
         </nav>
     );
 };
+
 export default Header;

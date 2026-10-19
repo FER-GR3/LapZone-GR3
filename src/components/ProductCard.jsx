@@ -2,17 +2,25 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import StarRating from './StarRating';
+import { useCart } from '../context/CartContext';
+
 const formatPrice = (price) =>
     new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
+
 const ProductCard = ({ product }) => {
+    const { addToCart } = useCart();
+
     const discount = product.oldPrice
         ? Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100)
         : null;
+
     const handleAddToCart = (e) => {
         e.preventDefault();
         e.stopPropagation();
+        addToCart(product, 1);
         toast.success(`Đã thêm "${product.name}" vào giỏ hàng!`);
     };
+
     return (
         <div className="product-card h-100">
             <Link to={`/products/${product.id}`} className="text-decoration-none">
@@ -29,6 +37,7 @@ const ProductCard = ({ product }) => {
                         {product.tags?.includes('bestseller') && <span className="badge bg-success">Bán chạy</span>}
                     </div>
                 </div>
+
                 <div className="product-body">
                     <p className="product-brand">{product.brand}</p>
                     <h6 className="product-name text-dark fw-bold">{product.name}</h6>
@@ -37,12 +46,14 @@ const ProductCard = ({ product }) => {
                         <StarRating value={product.rating} size="sm" />
                         <small className="text-muted">({product.reviewCount || 0})</small>
                     </div>
+
                     <div className="d-flex align-items-center flex-wrap gap-1">
                         <span className="product-price">{formatPrice(product.price)}</span>
                         {product.oldPrice && (
                             <span className="product-old-price ms-2">{formatPrice(product.oldPrice)}</span>
                         )}
                     </div>
+
                     {/* Cấu hình vắn tắt */}
                     {product.specs && (
                         <div className="mt-2 d-flex gap-1 flex-wrap">
@@ -52,6 +63,7 @@ const ProductCard = ({ product }) => {
                     )}
                 </div>
             </Link>
+
             <div className="product-footer px-3 pb-3">
                 <button
                     className="btn btn-primary w-100 btn-sm"
@@ -65,4 +77,5 @@ const ProductCard = ({ product }) => {
         </div>
     );
 };
+
 export default ProductCard;

@@ -4,9 +4,12 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 import { AuthProvider } from './context/AuthContext';
+import { CartProvider } from './context/CartContext';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import Home from './pages/Home';
+import ProductDetail from './pages/ProductDetail';
+import Cart from './pages/Cart';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import './App.css';
@@ -24,13 +27,17 @@ function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <Routes>
-          <Route path="/" element={<MainLayout><Home /></MainLayout>} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-        <ToastContainer position="top-right" autoClose={2500} />
+        <CartProvider>
+          <Routes>
+            <Route path="/" element={<MainLayout><Home /></MainLayout>} />
+            <Route path="/products/:id" element={<MainLayout><ProductDetail /></MainLayout>} />
+            <Route path="/cart" element={<MainLayout><Cart /></MainLayout>} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+          <ToastContainer position="top-right" autoClose={2500} />
+        </CartProvider>
       </AuthProvider>
     </BrowserRouter>
   );
