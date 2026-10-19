@@ -30,3 +30,6 @@ export const getProducts = (params = {}) => {
     return request(`/products${queryString}`);
 };
 export const getProductById = (id) => request(`/products/${id}`);
+export const createCategory = (data) => request('/categories', { method: 'POST', body: JSON.stringify(data) });
+export const updateCategory = (id, data) => request(`/categories/${id}`, { method: 'PUT', body: JSON.stringify(data) });
+export const deleteCategory = (id) => request(`/categories/${id}`, { method: 'DELETE' });

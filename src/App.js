@@ -5,6 +5,8 @@ import 'react-toastify/dist/ReactToastify.css';
 
 import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
+import { AdminRoute } from './components/ProtectedRoute';
+
 import Header from './components/Header';
 import Footer from './components/Footer';
 import Home from './pages/Home';
@@ -12,9 +14,13 @@ import ProductDetail from './pages/ProductDetail';
 import Cart from './pages/Cart';
 import Login from './pages/Login';
 import Register from './pages/Register';
+
+import AdminLayout from './pages/admin/AdminLayout';
+import Dashboard from './pages/admin/Dashboard';
+import AdminCategories from './pages/admin/AdminCategories';
+
 import './App.css';
 
-// MainLayout chung cho các trang
 const MainLayout = ({ children }) => (
   <div className="site-wrapper">
     <Header />
@@ -34,6 +40,12 @@ function App() {
             <Route path="/cart" element={<MainLayout><Cart /></MainLayout>} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+
+            <Route path="/admin" element={<AdminRoute><AdminLayout /></AdminRoute>}>
+              <Route index element={<Dashboard />} />
+              <Route path="categories" element={<AdminCategories />} />
+            </Route>
+
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
           <ToastContainer position="top-right" autoClose={2500} />
