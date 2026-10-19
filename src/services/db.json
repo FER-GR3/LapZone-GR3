@@ -1,0 +1,168 @@
+{
+    "users": [
+        {
+            "id": "1",
+            "name": "Admin LaptopZone",
+            "email": "admin@laptopzone.vn",
+            "password": "admin123",
+            "role": "admin",
+            "phone": "0901234567",
+            "address": "123 Nguyễn Huệ, Quận 1, TP.HCM",
+            "avatar": ""
+        },
+        {
+            "id": "2",
+            "name": "Nguyễn Văn An",
+            "email": "user@laptopzone.vn",
+            "password": "user123",
+            "role": "user",
+            "phone": "0912345678",
+            "address": "456 Lê Lợi, Quận 3, TP.HCM",
+            "avatar": ""
+        }
+    ],
+    "categories": [
+        {
+            "id": "1",
+            "name": "Gaming",
+            "slug": "gaming",
+            "description": "Laptop gaming hiệu năng cao, trang bị GPU rời mạnh mẽ",
+            "image": "https://images.unsplash.com/photo-1603302576837-37561b2e2302?w=600&q=80"
+        },
+        {
+            "id": "2",
+            "name": "Văn phòng",
+            "slug": "van-phong",
+            "description": "Laptop văn phòng mỏng nhẹ, pin trâu, làm việc hàng ngày",
+            "image": "https://images.unsplash.com/photo-1525547719571-a2d4ac8945e2?w=600&q=80"
+        },
+        {
+            "id": "3",
+            "name": "Siêu mỏng",
+            "slug": "sieu-mong",
+            "description": "Laptop siêu mỏng nhẹ, thiết kế sang trọng, dễ di chuyển",
+            "image": "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=600&q=80"
+        },
+        {
+            "id": "4",
+            "name": "Sinh viên",
+            "slug": "sinh-vien",
+            "description": "Laptop giá tốt, cấu hình ổn định dành cho học tập",
+            "image": "https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=600&q=80"
+        },
+        {
+            "id": "5",
+            "name": "Đồ họa",
+            "slug": "do-hoa",
+            "description": "Laptop chuyên đồ họa, màn hình chuẩn màu, render mạnh mẽ",
+            "image": "https://images.unsplash.com/photo-1593642632559-0c6d3fc62b89?w=600&q=80"
+        }
+    ],
+    "products": [
+        {
+            "id": "1",
+            "name": "ASUS ROG Strix G15 2024",
+            "brand": "ASUS",
+            "categoryId": "1",
+            "price": 32990000,
+            "oldPrice": 35990000,
+            "description": "Laptop gaming mạnh mẽ với AMD Ryzen 9, RTX 4070, màn hình 165Hz.",
+            "specs": {
+                "cpu": "AMD Ryzen 9",
+                "ram": "16GB DDR5",
+                "storage": "1TB SSD",
+                "display": "15.6\" 165Hz"
+            },
+            "images": [
+                "https://images.unsplash.com/photo-1603302576837-37561b2e2302?w=700&q=80"
+            ],
+            "stock": 15,
+            "rating": 4.8,
+            "reviewCount": 24,
+            "visible": true,
+            "featured": true,
+            "tags": [
+                "bestseller",
+                "hot"
+            ]
+        },
+        {
+            "id": "2",
+            "name": "Dell XPS 13 Plus 9320",
+            "brand": "Dell",
+            "categoryId": "3",
+            "price": 42500000,
+            "oldPrice": 45000000,
+            "description": "Tuyệt tác siêu mỏng nhẹ, màn hình OLED 3.5K sắc nét, pin 12 giờ.",
+            "specs": {
+                "cpu": "Intel Core i7",
+                "ram": "16GB LPDDR5",
+                "storage": "512GB SSD",
+                "display": "13.4\" OLED"
+            },
+            "images": [
+                "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=700&q=80"
+            ],
+            "stock": 10,
+            "rating": 4.9,
+            "reviewCount": 18,
+            "visible": true,
+            "featured": true,
+            "tags": [
+                "hot"
+            ]
+        },
+        {
+            "id": "3",
+            "name": "Lenovo IdeaPad Slim 3 15IAH8",
+            "brand": "Lenovo",
+            "categoryId": "4",
+            "price": 14290000,
+            "oldPrice": 16990000,
+            "description": "Lựa chọn hàng đầu cho sinh viên, hiệu năng ổn định, bàn phím gõ êm.",
+            "specs": {
+                "cpu": "Intel Core i5",
+                "ram": "16GB DDR5",
+                "storage": "512GB SSD",
+                "display": "15.6\" FHD"
+            },
+            "images": [
+                "https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=700&q=80"
+            ],
+            "stock": 25,
+            "rating": 4.6,
+            "reviewCount": 35,
+            "visible": true,
+            "featured": true,
+            "tags": [
+                "sale"
+            ]
+        },
+        {
+            "id": "4",
+            "name": "MacBook Air M2 13.6 inch",
+            "brand": "Apple",
+            "categoryId": "2",
+            "price": 24990000,
+            "oldPrice": 27990000,
+            "description": "Thiết kế tai thỏ sang trọng, chip Apple M2 mượt mà, thời lượng pin cả ngày.",
+            "specs": {
+                "cpu": "Apple M2 8-core",
+                "ram": "8GB Unified",
+                "storage": "256GB SSD",
+                "display": "13.6\" Liquid Retina"
+            },
+            "images": [
+                "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=700&q=80"
+            ],
+            "stock": 12,
+            "rating": 5.0,
+            "reviewCount": 42,
+            "visible": true,
+            "featured": true,
+            "tags": [
+                "bestseller"
+            ]
+        }
+    ]
+}
