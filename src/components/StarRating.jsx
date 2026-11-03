@@ -1,7 +1,9 @@
 import React from 'react';
+
 const StarRating = ({ value = 0, onChange, size = 'md', showValue = false }) => {
     const stars = [1, 2, 3, 4, 5];
     const starSize = size === 'sm' ? '0.85rem' : size === 'lg' ? '1.5rem' : '1.1rem';
+
     return (
         <span className="d-inline-flex align-items-center gap-1">
             {stars.map((star) => {
@@ -22,8 +24,9 @@ const StarRating = ({ value = 0, onChange, size = 'md', showValue = false }) => 
                     />
                 );
             })}
-            {showValue && <span style={{ fontSize: starSize, color: '#64748b', marginLeft: 4 }}>({value})</span>}
+            {showValue && <span style={{ fontSize: starSize, color: '#64748b', marginLeft: 2 }}>{value}</span>}
         </span>
     );
 };
+
 export default StarRating;
