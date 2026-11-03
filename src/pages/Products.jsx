@@ -38,246 +38,238 @@ const Products = () => {
     const fetchProducts = useCallback(async () => {
         setLoading(true);
         try {
-            const all = await getProducts();
-            let result = all.filter(p => p.visible !== false);
+            const params = { visible: true };
+            if (filters.category) params.categoryId = filters.category;
+            if (filters.brand) params.brand = filters.brand;
+            if (filters.tag) params['tags_like'] = filters.tag;
+            if (filters.search) params.name_like = filters.search;
 
-            if (filters.category) {
-                const cat = categories.find(c => c.slug === filters.category);
-                if (cat) result = result.filter(p => p.categoryId === cat.id);
-            }
-            if (filters.brand) {
-                result = result.filter(p => p.brand?.toLowerCase() === filters.brand.toLowerCase());
-            }
-            if (filters.priceRange !== '') {
-                const range = PRICE_RANGES[Number(filters.priceRange)];
-                if (range) result = result.filter(p => p.price >= range.min && p.price <= range.max);
-            }
-            if (filters.tag) {
-                result = result.filter(p => p.tags?.includes(filters.tag));
-            }
-            if (filters.search) {
-                const q = filters.search.toLowerCase();
-                result = result.filter(p =>
-                    p.name?.toLowerCase().includes(q) ||
-                    p.brand?.toLowerCase().includes(q) ||
-                    p.description?.toLowerCase().includes(q)
-                );
+            let data = await getProducts(params);
+
+            // Price filter client-side
+            if (filters.priceRange) {
+                const range = PRICE_RANGES.find(r => r.label === filters.priceRange);
+                if (range) data = data.filter(p => p.price >= range.min && p.price <= range.max);
             }
 
-            if (sort === 'price-asc') result.sort((a, b) => a.price - b.price);
-            else if (sort === 'price-desc') result.sort((a, b) => b.price - a.price);
-            else if (sort === 'rating') result.sort((a, b) => (b.rating || 0) - (a.rating || 0));
-            else if (sort === 'newest') result.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+            // Sort
+            if (sort === 'price_asc') data.sort((a, b) => a.price - b.price);
+            else if (sort === 'price_desc') data.sort((a, b) => b.price - a.price);
+            else if (sort === 'rating') data.sort((a, b) => b.rating - a.rating);
+            else if (sort === 'newest') data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+            else if (sort === 'popular') data.sort((a, b) => b.reviewCount - a.reviewCount);
 
-            setTotal(result.length);
-            const start = (page - 1) * limit;
-            setProducts(result.slice(start, start + limit));
+            setTotal(data.length);
+            setProducts(data.slice((page - 1) * limit, page * limit));
         } finally {
             setLoading(false);
         }
-    }, [filters, sort, page, categories]);
+    }, [filters, sort, page]);
 
-    useEffect(() => {
-        fetchProducts();
-    }, [fetchProducts]);
+    useEffect(() => { fetchProducts(); }, [fetchProducts]);
 
-    const handleFilterChange = (key, value) => {
-        const next = { ...filters, [key]: value };
-        setFilters(next);
+    const updateFilter = (key, value) => {
+        setFilters(prev => ({ ...prev, [key]: value }));
         setPage(1);
-        const p = new URLSearchParams();
-        if (next.category) p.set('category', next.category);
-        if (next.brand) p.set('brand', next.brand);
-        if (next.tag) p.set('tag', next.tag);
-        if (next.search) p.set('q', next.search);
-        setSearchParams(p);
     };
 
-    const handleSearchSubmit = (e) => {
-        e.preventDefault();
-        handleFilterChange('search', searchInput);
-    };
-
-    const handleReset = () => {
+    const clearFilters = () => {
         setFilters({ category: '', brand: '', priceRange: '', tag: '', search: '' });
         setSearchInput('');
-        setSort('');
         setPage(1);
         setSearchParams({});
     };
 
+    const handleSearch = (e) => {
+        e.preventDefault();
+        updateFilter('search', searchInput);
+    };
+
     const totalPages = Math.ceil(total / limit);
+    const activeFiltersCount = Object.values(filters).filter(Boolean).length;
 
     return (
         <div className="py-4" style={{ background: '#f8fafc', minHeight: '80vh' }}>
             <div className="container">
-                {/* Search Bar + Active filters count */}
-                <div className="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">
-                    <form onSubmit={handleSearchSubmit} className="d-flex gap-2" style={{ maxWidth: 420, width: '100%' }}>
-                        <div className="input-group">
-                            <span className="input-group-text bg-white"><i className="bi bi-search text-muted"></i></span>
-                            <input
-                                type="text"
-                                className="form-control border-start-0"
-                                placeholder="Tìm theo tên laptop, hãng..."
-                                value={searchInput}
-                                onChange={e => setSearchInput(e.target.value)}
-                            />
-                            {searchInput && (
-                                <button type="button" className="btn btn-outline-secondary" onClick={() => { setSearchInput(''); handleFilterChange('search', ''); }}>
-                                    <i className="bi bi-x"></i>
-                                </button>
-                            )}
-                        </div>
-                        <button type="submit" className="btn btn-primary">Tìm</button>
-                    </form>
-
-                    <div className="d-flex align-items-center gap-3">
-                        <span className="text-muted small">Tìm thấy <strong>{total}</strong> sản phẩm</span>
-                        <select className="form-select form-select-sm" style={{ width: 180 }} value={sort} onChange={e => setSort(e.target.value)}>
-                            <option value="">Sắp xếp mặc định</option>
-                            <option value="newest">Mới nhất</option>
-                            <option value="price-asc">Giá: Thấp đến Cao</option>
-                            <option value="price-desc">Giá: Cao đến Thấp</option>
-                            <option value="rating">Đánh giá cao nhất</option>
-                        </select>
-                    </div>
-                </div>
+                {/* Breadcrumb */}
+                <nav aria-label="breadcrumb" className="mb-3">
+                    <ol className="breadcrumb">
+                        <li className="breadcrumb-item"><a href="/" className="text-decoration-none">Trang chủ</a></li>
+                        <li className="breadcrumb-item active">Sản phẩm</li>
+                    </ol>
+                </nav>
 
                 <div className="row g-4">
-                    {/* Sidebar filters */}
+                    {/* ===== SIDEBAR ===== */}
                     <div className="col-lg-3">
-                        <div className="filter-sidebar card border-0 shadow-sm p-3">
+                        <div className="filter-sidebar">
                             <div className="d-flex justify-content-between align-items-center mb-3">
-                                <h6 className="fw-bold mb-0"><i className="bi bi-funnel me-2"></i>Bộ lọc</h6>
-                                <button className="btn btn-link btn-sm text-muted p-0 text-decoration-none" onClick={handleReset}>Xoá lọc</button>
+                                <h6 className="fw-bold mb-0 d-flex align-items-center gap-2">
+                                    <i className="bi bi-funnel"></i> Bộ lọc
+                                    {activeFiltersCount > 0 && <span className="badge bg-primary rounded-pill">{activeFiltersCount}</span>}
+                                </h6>
+                                {activeFiltersCount > 0 && (
+                                    <button className="btn btn-link btn-sm text-danger p-0" onClick={clearFilters}>Xóa tất cả</button>
+                                )}
                             </div>
 
+                            {/* Search */}
+                            <form onSubmit={handleSearch} className="mb-3">
+                                <div className="input-group input-group-sm">
+                                    <input
+                                        type="text"
+                                        className="form-control"
+                                        placeholder="Tìm kiếm..."
+                                        value={searchInput}
+                                        onChange={e => setSearchInput(e.target.value)}
+                                    />
+                                    <button className="btn btn-primary" type="submit"><i className="bi bi-search"></i></button>
+                                </div>
+                            </form>
+
                             {/* Categories */}
-                            <div className="filter-group mb-3">
-                                <div className="filter-title fw-semibold small text-uppercase text-muted mb-2">Danh mục</div>
+                            <div className="filter-group">
+                                <h6 className="filter-group-title">Danh mục</h6>
                                 <div className="d-flex flex-column gap-1">
-                                    <button
-                                        className={`filter-btn text-start ${filters.category === '' ? 'active' : ''}`}
-                                        onClick={() => handleFilterChange('category', '')}
-                                    >
-                                        Tất cả danh mục
-                                    </button>
-                                    {categories.map(c => (
-                                        <button
-                                            key={c.id}
-                                            className={`filter-btn text-start ${filters.category === c.slug ? 'active' : ''}`}
-                                            onClick={() => handleFilterChange('category', c.slug)}
-                                        >
-                                            {c.name}
-                                        </button>
+                                    <label className="filter-radio">
+                                        <input type="radio" name="cat" value="" checked={!filters.category} onChange={() => updateFilter('category', '')} />
+                                        <span>Tất cả</span>
+                                    </label>
+                                    {categories.map(cat => (
+                                        <label key={cat.id} className="filter-radio">
+                                            <input type="radio" name="cat" value={cat.id} checked={filters.category === String(cat.id)} onChange={() => updateFilter('category', String(cat.id))} />
+                                            <span>{cat.name}</span>
+                                        </label>
                                     ))}
                                 </div>
                             </div>
 
                             {/* Brands */}
-                            <div className="filter-group mb-3">
-                                <div className="filter-title fw-semibold small text-uppercase text-muted mb-2">Thương hiệu</div>
+                            <div className="filter-group">
+                                <h6 className="filter-group-title">Thương hiệu</h6>
                                 <div className="d-flex flex-wrap gap-1">
-                                    {BRANDS.map(b => (
+                                    {BRANDS.map(brand => (
                                         <button
-                                            key={b}
-                                            className={`btn btn-xs ${filters.brand === b ? 'btn-primary' : 'btn-outline-secondary'}`}
-                                            onClick={() => handleFilterChange('brand', filters.brand === b ? '' : b)}
+                                            key={brand}
+                                            className={`btn btn-xs ${filters.brand === brand ? 'btn-primary' : 'btn-outline-secondary'}`}
+                                            onClick={() => updateFilter('brand', filters.brand === brand ? '' : brand)}
                                         >
-                                            {b}
+                                            {brand}
                                         </button>
                                     ))}
                                 </div>
                             </div>
 
                             {/* Price range */}
-                            <div className="filter-group mb-3">
-                                <div className="filter-title fw-semibold small text-uppercase text-muted mb-2">Mức giá</div>
-                                <div className="d-flex flex-column gap-1">
-                                    {PRICE_RANGES.map((r, i) => (
-                                        <div key={r.label} className="form-check">
-                                            <input
-                                                className="form-check-input"
-                                                type="radio"
-                                                name="priceRange"
-                                                id={`pr-${i}`}
-                                                checked={filters.priceRange === String(i)}
-                                                onChange={() => setFilters(f => ({ ...f, priceRange: String(i) }))}
-                                            />
-                                            <label className="form-check-label small" htmlFor={`pr-${i}`}>{r.label}</label>
-                                        </div>
-                                    ))}
-                                    {filters.priceRange !== '' && (
-                                        <button className="btn btn-link btn-sm text-start p-0 text-muted" onClick={() => setFilters(f => ({ ...f, priceRange: '' }))}>
-                                            Bỏ chọn giá
-                                        </button>
-                                    )}
-                                </div>
-                            </div>
-
-                            {/* Tags */}
                             <div className="filter-group">
-                                <div className="filter-title fw-semibold small text-uppercase text-muted mb-2">Khác</div>
-                                <div className="d-flex flex-wrap gap-1">
-                                    {[['new', 'Mới'], ['hot', 'Hot'], ['sale', 'Giảm giá'], ['bestseller', 'Bán chạy']].map(([tag, label]) => (
-                                        <button
-                                            key={tag}
-                                            className={`btn btn-xs ${filters.tag === tag ? 'btn-primary' : 'btn-outline-secondary'}`}
-                                            onClick={() => handleFilterChange('tag', filters.tag === tag ? '' : tag)}
-                                        >
-                                            {label}
-                                        </button>
+                                <h6 className="filter-group-title">Khoảng giá</h6>
+                                <div className="d-flex flex-column gap-1">
+                                    <label className="filter-radio">
+                                        <input type="radio" name="price" value="" checked={!filters.priceRange} onChange={() => updateFilter('priceRange', '')} />
+                                        <span>Tất cả</span>
+                                    </label>
+                                    {PRICE_RANGES.map(r => (
+                                        <label key={r.label} className="filter-radio">
+                                            <input type="radio" name="price" value={r.label} checked={filters.priceRange === r.label} onChange={() => updateFilter('priceRange', r.label)} />
+                                            <span>{r.label}</span>
+                                        </label>
                                     ))}
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    {/* Products grid */}
+                    {/* ===== PRODUCT LIST ===== */}
                     <div className="col-lg-9">
+                        {/* Toolbar */}
+                        <div className="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
+                            <div className="text-muted small">
+                                <strong className="text-dark">{total}</strong> sản phẩm tìm thấy
+                                {filters.search && <span> cho "<strong>{filters.search}</strong>"</span>}
+                            </div>
+                            <div className="d-flex align-items-center gap-2">
+                                <label className="small text-muted">Sắp xếp:</label>
+                                <select className="form-select form-select-sm" style={{ width: 180 }} value={sort} onChange={e => { setSort(e.target.value); setPage(1); }}>
+                                    <option value="">Mặc định</option>
+                                    <option value="price_asc">Giá tăng dần</option>
+                                    <option value="price_desc">Giá giảm dần</option>
+                                    <option value="rating">Đánh giá cao nhất</option>
+                                    <option value="newest">Mới nhất</option>
+                                    <option value="popular">Phổ biến nhất</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        {/* Active filter tags */}
+                        {activeFiltersCount > 0 && (
+                            <div className="d-flex gap-2 mb-3 flex-wrap">
+                                {filters.category && categories.find(c => String(c.id) === filters.category) && (
+                                    <span className="filter-tag">
+                                        {categories.find(c => String(c.id) === filters.category)?.name}
+                                        <button onClick={() => updateFilter('category', '')}><i className="bi bi-x"></i></button>
+                                    </span>
+                                )}
+                                {filters.brand && (
+                                    <span className="filter-tag">
+                                        {filters.brand}
+                                        <button onClick={() => updateFilter('brand', '')}><i className="bi bi-x"></i></button>
+                                    </span>
+                                )}
+                                {filters.priceRange && (
+                                    <span className="filter-tag">
+                                        {filters.priceRange}
+                                        <button onClick={() => updateFilter('priceRange', '')}><i className="bi bi-x"></i></button>
+                                    </span>
+                                )}
+                                {filters.search && (
+                                    <span className="filter-tag">
+                                        "{filters.search}"
+                                        <button onClick={() => { updateFilter('search', ''); setSearchInput(''); }}><i className="bi bi-x"></i></button>
+                                    </span>
+                                )}
+                            </div>
+                        )}
+
                         {loading ? (
-                            <div className="d-flex justify-content-center align-items-center" style={{ minHeight: 300 }}>
+                            <div className="text-center py-5">
                                 <div className="spinner-border" style={{ color: '#38bdf8' }}></div>
+                                <p className="mt-2 text-muted">Đang tải sản phẩm...</p>
                             </div>
                         ) : products.length === 0 ? (
-                            <div className="text-center py-5 card border-0 shadow-sm">
-                                <i className="bi bi-inbox fs-1 text-muted mb-2"></i>
-                                <h5>Không tìm thấy sản phẩm phù hợp</h5>
-                                <p className="text-muted small">Hãy thử thay đổi tiêu chí lọc hoặc từ khoá tìm kiếm</p>
-                                <div><button className="btn btn-outline-primary btn-sm" onClick={handleReset}>Xoá bộ lọc</button></div>
+                            <div className="text-center py-5">
+                                <i className="bi bi-search display-1 text-muted"></i>
+                                <h5 className="mt-3 text-muted">Không tìm thấy sản phẩm</h5>
+                                <button className="btn btn-primary mt-2" onClick={clearFilters}>Xóa bộ lọc</button>
                             </div>
                         ) : (
-                            <>
-                                <div className="row g-3">
-                                    {products.map(p => (
-                                        <div key={p.id} className="col-xl-4 col-md-6">
-                                            <ProductCard product={p} />
-                                        </div>
-                                    ))}
-                                </div>
-
-                                {/* Pagination */}
-                                {totalPages > 1 && (
-                                    <div className="d-flex justify-content-center align-items-center gap-2 mt-4">
-                                        <button className="btn btn-sm btn-outline-secondary" disabled={page === 1} onClick={() => setPage(p => p - 1)}>
-                                            <i className="bi bi-chevron-left"></i>
-                                        </button>
-                                        {Array.from({ length: totalPages }, (_, i) => i + 1).map(num => (
-                                            <button
-                                                key={num}
-                                                className={`btn btn-sm ${page === num ? 'btn-primary' : 'btn-outline-secondary'}`}
-                                                onClick={() => setPage(num)}
-                                            >
-                                                {num}
-                                            </button>
-                                        ))}
-                                        <button className="btn btn-sm btn-outline-secondary" disabled={page === totalPages} onClick={() => setPage(p => p + 1)}>
-                                            <i className="bi bi-chevron-right"></i>
-                                        </button>
+                            <div className="row g-3">
+                                {products.map(p => (
+                                    <div key={p.id} className="col-lg-4 col-md-6 col-6">
+                                        <ProductCard product={p} />
                                     </div>
-                                )}
-                            </>
+                                ))}
+                            </div>
+                        )}
+
+                        {/* Pagination */}
+                        {totalPages > 1 && (
+                            <div className="d-flex justify-content-center mt-4">
+                                <nav>
+                                    <ul className="pagination pagination-sm">
+                                        <li className={`page-item ${page === 1 ? 'disabled' : ''}`}>
+                                            <button className="page-link" onClick={() => setPage(p => p - 1)}>&laquo;</button>
+                                        </li>
+                                        {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
+                                            <li key={p} className={`page-item ${page === p ? 'active' : ''}`}>
+                                                <button className="page-link" onClick={() => setPage(p)}>{p}</button>
+                                            </li>
+                                        ))}
+                                        <li className={`page-item ${page === totalPages ? 'disabled' : ''}`}>
+                                            <button className="page-link" onClick={() => setPage(p => p + 1)}>&raquo;</button>
+                                        </li>
+                                    </ul>
+                                </nav>
+                            </div>
                         )}
                     </div>
                 </div>
