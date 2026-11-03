@@ -12,38 +12,18 @@ const AdminCategories = () => {
     const [form, setForm] = useState(EMPTY_FORM);
     const [saving, setSaving] = useState(false);
 
-    const loadData = async () => {
+    const load = async () => {
         setLoading(true);
-        try {
-            const data = await getCategories();
-            setCategories(data);
-        } catch (err) {
-            toast.error('Lỗi tải danh mục!');
-        } finally {
-            setLoading(false);
-        }
+        setCategories(await getCategories());
+        setLoading(false);
     };
 
-    useEffect(() => {
-        loadData();
-    }, []);
+    useEffect(() => { load(); }, []);
 
-    const openCreate = () => {
-        setEditing(null);
-        setForm(EMPTY_FORM);
-        setShowModal(true);
-    };
+    const openCreate = () => { setEditing(null); setForm(EMPTY_FORM); setShowModal(true); };
+    const openEdit = (cat) => { setEditing(cat); setForm({ ...cat }); setShowModal(true); };
 
-    const openEdit = (cat) => {
-        setEditing(cat);
-        setForm({ ...cat });
-        setShowModal(true);
-    };
-
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setForm(prev => ({ ...prev, [name]: value }));
-    };
+    const handleChange = (e) => setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
 
     const autoSlug = (name) => {
         const s = name.toLowerCase()
@@ -61,11 +41,7 @@ const AdminCategories = () => {
 
     const handleSave = async (e) => {
         e.preventDefault();
-        if (!form.name.trim()) {
-            toast.error('Vui lòng nhập tên danh mục!');
-            return;
-        }
-
+        if (!form.name.trim()) { toast.error('Vui lòng nhập tên danh mục'); return; }
         setSaving(true);
         try {
             if (editing) {
@@ -73,146 +49,93 @@ const AdminCategories = () => {
                 toast.success('Cập nhật danh mục thành công!');
             } else {
                 await createCategory(form);
-                toast.success('Thêm danh mục mới thành công!');
+                toast.success('Thêm danh mục thành công!');
             }
             setShowModal(false);
-            loadData();
-        } catch (err) {
-            toast.error('Lưu danh mục thất bại!');
+            load();
+        } catch {
+            toast.error('Lưu thất bại');
         } finally {
             setSaving(false);
         }
     };
 
     const handleDelete = async (cat) => {
-        if (!window.confirm(`Bạn có chắc chắn muốn xóa danh mục "${cat.name}"?`)) return;
-        try {
-            await deleteCategory(cat.id);
-            toast.success(`Đã xóa danh mục "${cat.name}" thành công!`);
-            loadData();
-        } catch (err) {
-            toast.error('Xóa danh mục thất bại!');
-        }
+        if (!window.confirm(`Xoá danh mục "${cat.name}"?`)) return;
+        await deleteCategory(cat.id);
+        toast.success('Đã xoá danh mục');
+        load();
     };
 
     return (
         <div>
             <div className="d-flex justify-content-between align-items-center mb-4">
-                <div>
-                    <h4 className="fw-bold mb-1">Quản lý Danh mục</h4>
-                    <p className="text-muted small mb-0">Thêm, sửa thông tin và phân loại laptop theo danh mục.</p>
-                </div>
+                <h4 className="fw-bold mb-0">Quản lý danh mục</h4>
                 <button className="btn btn-primary" onClick={openCreate}>
-                    <i className="bi bi-plus-lg me-1"></i>Thêm danh mục
+                    <i className="bi bi-plus-lg me-2"></i>Thêm danh mục
                 </button>
             </div>
 
-            <div className="card shadow-sm border-0">
-                <div className="table-responsive">
-                    <table className="table align-middle mb-0">
-                        <thead className="table-light">
-                            <tr>
-                                <th style={{ width: '80px' }}>Ảnh</th>
-                                <th>Tên danh mục</th>
-                                <th>Đường dẫn (Slug)</th>
-                                <th>Mô tả</th>
-                                <th className="text-end" style={{ width: '140px' }}>Hành động</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {loading ? (
-                                <tr>
-                                    <td colSpan="5" className="text-center py-4">
-                                        <div className="spinner-border spinner-border-sm text-primary"></div>
-                                        <span className="ms-2">Đang tải danh mục...</span>
-                                    </td>
-                                </tr>
-                            ) : categories.map((cat) => (
-                                <tr key={cat.id}>
-                                    <td>
-                                        <img
-                                            src={cat.image || 'https://via.placeholder.com/60'}
-                                            alt={cat.name}
-                                            className="rounded border"
-                                            style={{ width: '55px', height: '40px', objectFit: 'cover' }}
-                                        />
-                                    </td>
-                                    <td><strong>{cat.name}</strong></td>
-                                    <td><code>{cat.slug}</code></td>
-                                    <td className="small text-muted">{cat.description}</td>
-                                    <td className="text-end">
-                                        <button className="btn btn-sm btn-outline-primary me-2" onClick={() => openEdit(cat)}>
-                                            <i className="bi bi-pencil"></i>
-                                        </button>
-                                        <button className="btn btn-sm btn-outline-danger" onClick={() => handleDelete(cat)}>
-                                            <i className="bi bi-trash"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
+            <div className="row g-3">
+                {loading ? (
+                    <div className="text-center py-4"><div className="spinner-border spinner-border-sm"></div></div>
+                ) : categories.map(cat => (
+                    <div key={cat.id} className="col-lg-4 col-md-6">
+                        <div className="card border-0 shadow-sm h-100">
+                            <div className="position-relative">
+                                <img src={cat.image} alt={cat.name} className="card-img-top" style={{ height: 140, objectFit: 'cover' }} />
+                            </div>
+                            <div className="card-body">
+                                <h6 className="fw-bold mb-1">{cat.name}</h6>
+                                <code className="small text-muted">{cat.slug}</code>
+                                <p className="small text-muted mt-1 mb-3">{cat.description}</p>
+                                <div className="d-flex gap-2">
+                                    <button className="btn btn-sm btn-outline-primary flex-grow-1" onClick={() => openEdit(cat)}>
+                                        <i className="bi bi-pencil me-1"></i>Sửa
+                                    </button>
+                                    <button className="btn btn-sm btn-outline-danger" onClick={() => handleDelete(cat)}>
+                                        <i className="bi bi-trash3"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                ))}
             </div>
 
+            {/* Modal */}
             {showModal && (
                 <div className="modal show d-block" style={{ background: 'rgba(0,0,0,0.5)', zIndex: 1050 }}>
                     <div className="modal-dialog modal-dialog-centered">
-                        <div className="modal-content shadow border-0 rounded-3">
+                        <div className="modal-content">
                             <div className="modal-header">
-                                <h5 className="modal-title fw-bold">{editing ? 'Chỉnh sửa danh mục' : 'Thêm mới danh mục'}</h5>
+                                <h5 className="modal-title fw-bold">{editing ? 'Sửa danh mục' : 'Thêm danh mục'}</h5>
                                 <button type="button" className="btn-close" onClick={() => setShowModal(false)}></button>
                             </div>
                             <form onSubmit={handleSave}>
                                 <div className="modal-body">
                                     <div className="mb-3">
                                         <label className="form-label small fw-medium">Tên danh mục *</label>
-                                        <input
-                                            type="text"
-                                            className="form-control"
-                                            value={form.name}
-                                            onChange={(e) => autoSlug(e.target.value)}
-                                            placeholder="Ví dụ: Laptop Đồ Họa"
-                                            required
-                                        />
+                                        <input type="text" className="form-control" name="name" value={form.name} onChange={e => autoSlug(e.target.value)} required />
                                     </div>
                                     <div className="mb-3">
-                                        <label className="form-label small fw-medium">Slug (Tự động sinh)</label>
-                                        <input
-                                            type="text"
-                                            className="form-control bg-light"
-                                            name="slug"
-                                            value={form.slug}
-                                            onChange={handleChange}
-                                        />
+                                        <label className="form-label small fw-medium">Slug</label>
+                                        <input type="text" className="form-control" name="slug" value={form.slug} onChange={handleChange} />
                                     </div>
                                     <div className="mb-3">
-                                        <label className="form-label small fw-medium">Mô tả tóm tắt</label>
-                                        <textarea
-                                            className="form-control"
-                                            name="description"
-                                            rows="3"
-                                            value={form.description}
-                                            onChange={handleChange}
-                                            placeholder="Mô tả danh mục..."
-                                        ></textarea>
+                                        <label className="form-label small fw-medium">Mô tả</label>
+                                        <textarea className="form-control" name="description" value={form.description} onChange={handleChange} rows={3} />
                                     </div>
                                     <div className="mb-3">
-                                        <label className="form-label small fw-medium">URL Ảnh minh họa</label>
-                                        <input
-                                            type="text"
-                                            className="form-control"
-                                            name="image"
-                                            value={form.image}
-                                            onChange={handleChange}
-                                            placeholder="https://images.unsplash.com/..."
-                                        />
+                                        <label className="form-label small fw-medium">URL hình ảnh</label>
+                                        <input type="text" className="form-control" name="image" value={form.image} onChange={handleChange} placeholder="https://..." />
+                                        {form.image && <img src={form.image} alt="" className="mt-2 rounded-2 w-100" style={{ height: 100, objectFit: 'cover' }} />}
                                     </div>
                                 </div>
                                 <div className="modal-footer">
-                                    <button type="button" className="btn btn-secondary btn-sm" onClick={() => setShowModal(false)}>Hủy</button>
-                                    <button type="submit" className="btn btn-primary btn-sm px-3" disabled={saving}>
-                                        {saving ? 'Đang lưu...' : 'Lưu dữ liệu'}
+                                    <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}>Huỷ</button>
+                                    <button type="submit" className="btn btn-primary" disabled={saving}>
+                                        {saving ? <span className="spinner-border spinner-border-sm me-2"></span> : null}Lưu
                                     </button>
                                 </div>
                             </form>

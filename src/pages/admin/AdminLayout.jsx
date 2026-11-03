@@ -9,34 +9,31 @@ const AdminLayout = () => {
     const [sidebarOpen, setSidebarOpen] = useState(true);
 
     const navItems = [
-        { path: '/admin', icon: 'speedometer2', label: 'Tổng quan (Dashboard)', exact: true },
-        { path: '/admin/categories', icon: 'tags', label: 'Quản lý Danh mục' },
-        { path: '/admin/products', icon: 'box-seam', label: 'Quản lý Sản phẩm' },
+        { path: '/admin', icon: 'speedometer2', label: 'Dashboard', exact: true },
+        { path: '/admin/products', icon: 'box-seam', label: 'Sản phẩm' },
+        { path: '/admin/categories', icon: 'tags', label: 'Danh mục' },
+        { path: '/admin/orders', icon: 'bag', label: 'Đơn hàng' },
+        { path: '/admin/reviews', icon: 'star', label: 'Đánh giá' },
     ];
 
-    const isActive = (path, exact) =>
-        exact ? location.pathname === path : location.pathname.startsWith(path);
-
-    const handleLogout = () => {
-        logout();
-        navigate('/login');
-    };
+    const isActive = (path, exact) => exact ? location.pathname === path : location.pathname.startsWith(path);
 
     return (
         <div className="admin-layout d-flex" style={{ minHeight: '100vh' }}>
+            {/* Sidebar */}
             <aside className={`admin-sidebar ${sidebarOpen ? 'open' : 'collapsed'}`}>
                 <div className="sidebar-header">
                     <Link to="/" className="d-flex align-items-center gap-2 text-decoration-none">
-                        <i className="bi bi-laptop fs-4 text-primary"></i>
-                        {sidebarOpen && <span className="fw-bold text-white fs-5">LaptopZone</span>}
+                        <i className="bi bi-laptop fs-4" style={{ color: '#38bdf8' }}></i>
+                        {sidebarOpen && <span className="fw-bold" style={{ color: '#38bdf8' }}>LaptopZone</span>}
                     </Link>
-                    <button className="btn btn-sm text-white-50 p-0 border-0" onClick={() => setSidebarOpen(!sidebarOpen)}>
+                    <button className="btn btn-sm text-white-50" onClick={() => setSidebarOpen(o => !o)}>
                         <i className={`bi bi-chevron-${sidebarOpen ? 'left' : 'right'}`}></i>
                     </button>
                 </div>
 
                 <nav className="sidebar-nav">
-                    {navItems.map((item) => (
+                    {navItems.map(item => (
                         <Link
                             key={item.path}
                             to={item.path}
@@ -49,32 +46,36 @@ const AdminLayout = () => {
                 </nav>
 
                 <div className="sidebar-footer">
-                    <Link to="/" className="sidebar-nav-item mb-1">
-                        <i className="bi bi-arrow-left-circle"></i>
-                        {sidebarOpen && <span>Về Website</span>}
+                    <Link to="/" className="sidebar-nav-item">
+                        <i className="bi bi-house"></i>
+                        {sidebarOpen && <span>Trang chủ</span>}
                     </Link>
-                    <button className="sidebar-nav-item text-danger border-0 bg-transparent w-100 text-start" onClick={handleLogout}>
+                    <button className="sidebar-nav-item btn text-white w-100 text-start" onClick={() => { logout(); navigate('/'); }}>
                         <i className="bi bi-box-arrow-left"></i>
                         {sidebarOpen && <span>Đăng xuất</span>}
                     </button>
                 </div>
             </aside>
 
-            <div className="admin-main flex-grow-1 bg-light">
-                <header className="admin-header bg-white px-4 py-3 d-flex justify-content-between align-items-center border-bottom shadow-sm">
+            {/* Main */}
+            <div className="admin-main flex-grow-1">
+                <header className="admin-header">
                     <div className="d-flex align-items-center gap-3">
-                        <button className="btn btn-sm btn-outline-secondary d-md-none" onClick={() => setSidebarOpen(!sidebarOpen)}>
-                            <i className="bi bi-list"></i>
+                        <button className="btn btn-sm d-lg-none" onClick={() => setSidebarOpen(o => !o)}>
+                            <i className="bi bi-list fs-5"></i>
                         </button>
-                        <h5 className="mb-0 fw-bold text-dark">Trang Quản Trị Hệ Thống</h5>
+                        <h5 className="mb-0 fw-bold">
+                            {navItems.find(n => isActive(n.path, n.exact))?.label || 'Admin'}
+                        </h5>
                     </div>
                     <div className="d-flex align-items-center gap-2">
-                        <span className="badge bg-danger me-1">Admin</span>
-                        <span className="fw-medium text-dark">{user?.name}</span>
+                        <div className="d-flex align-items-center gap-2">
+                            <div className="avatar-sm">{user?.name?.charAt(0).toUpperCase()}</div>
+                            <span className="small fw-medium d-none d-md-block">{user?.name}</span>
+                        </div>
                     </div>
                 </header>
-
-                <main className="admin-content p-4">
+                <main className="admin-content">
                     <Outlet />
                 </main>
             </div>
