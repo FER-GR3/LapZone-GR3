@@ -1,146 +1,234 @@
-import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useCart } from '../context/CartContext';
-import { toast } from 'react-toastify';
+import React from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useCart } from "../context/CartContext";
+import { useAuth } from "../context/AuthContext";
+import { toast } from "react-toastify";
 
 const formatPrice = (p) =>
-    new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(p);
+    new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(
+        p,
+    );
 
 const Cart = () => {
-    const { cartItems, removeFromCart, updateQuantity, cartTotal, clearCart } = useCart();
+    const { cartItems, removeFromCart, updateQuantity, cartTotal, clearCart } =
+        useCart();
+    const { user } = useAuth();
     const navigate = useNavigate();
 
-    const handleRemove = (productId) => {
-        if (window.confirm('Bạn có chắc muốn xóa sản phẩm này khỏi giỏ hàng?')) {
-            removeFromCart(productId);
-            toast.success('Đã xóa sản phẩm khỏi giỏ hàng!');
+    const handleRemove = (id) => {
+        const confirmDelete = window.confirm(
+            "Bạn có chắc muốn xóa sản phẩm này khỏi giỏ hàng không?",
+        );
+        if (!confirmDelete) return;
+
+        removeFromCart(id);
+        toast.success("Đã xóa sản phẩm khỏi giỏ hàng!");
+    };
+
+    const handleClearCart = () => {
+        const confirmDelete = window.confirm(
+            "Bạn có chắc muốn xóa tất cả sản phẩm trong giỏ hàng không?",
+        );
+        if (!confirmDelete) return;
+
+        clearCart();
+        toast.success("Đã xóa toàn bộ giỏ hàng!");
+    };
+
+    const handleCheckout = () => {
+        if (!user) {
+            navigate("/login", { state: { from: { pathname: "/checkout" } } });
+        } else {
+            navigate("/checkout");
         }
     };
 
     if (cartItems.length === 0) {
         return (
-            <div className="container py-5 text-center min-vh-75">
-                <i className="bi bi-cart-x text-muted" style={{ fontSize: '5rem' }}></i>
-                <h4 className="fw-bold mt-3">Giỏ hàng của bạn đang trống</h4>
-                <p className="text-muted">Hãy chọn cho mình mẫu laptop ưng ý nhất tại LaptopZone nhé!</p>
-                <Link to="/" className="btn btn-primary px-4 py-2 mt-2">
-                    <i className="bi bi-arrow-left me-2"></i>Khám phá sản phẩm ngay
-                </Link>
+            <div className="container py-5 text-center">
+                <div className="empty-state">
+                    <i
+                        className="bi bi-cart-x display-1"
+                        style={{ color: "#38bdf8" }}
+                    ></i>
+                    <h4 className="mt-3">Giỏ hàng trống</h4>
+                    <p className="text-muted">
+                        Hãy khám phá và thêm sản phẩm vào giỏ hàng nhé!
+                    </p>
+                    <Link to="/products" className="btn btn-primary mt-2">
+                        <i className="bi bi-grid me-2"></i>Khám phá sản phẩm
+                    </Link>
+                </div>
             </div>
         );
     }
 
     return (
-        <div className="py-4 bg-light min-vh-100">
+        <div className="py-4" style={{ background: "#f8fafc", minHeight: "80vh" }}>
             <div className="container">
-                <h3 className="fw-bold mb-4">Giỏ hàng của bạn ({cartItems.length} sản phẩm)</h3>
+                <nav aria-label="breadcrumb" className="mb-3">
+                    <ol className="breadcrumb">
+                        <li className="breadcrumb-item">
+                            <Link to="/" className="text-decoration-none">
+                                Trang chủ
+                            </Link>
+                        </li>
+                        <li className="breadcrumb-item active">Giỏ hàng</li>
+                    </ol>
+                </nav>
+                <h3 className="fw-bold mb-4">Giỏ hàng ({cartItems.length} sản phẩm)</h3>
 
                 <div className="row g-4">
-                    {/* Danh sách các sản phẩm */}
+                    {/* Cart items */}
                     <div className="col-lg-8">
-                        <div className="card shadow-sm border-0 p-3 mb-3">
-                            <div className="table-responsive">
-                                <table className="table align-middle mb-0">
-                                    <thead className="table-light">
-                                        <tr>
-                                            <th>Sản phẩm</th>
-                                            <th>Đơn giá</th>
-                                            <th className="text-center">Số lượng</th>
-                                            <th className="text-end">Tạm tính</th>
-                                            <th></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {cartItems.map((item) => (
-                                            <tr key={item.productId}>
-                                                <td>
+                        <div className="card border-0 shadow-sm">
+                            <div className="card-body p-0">
+                                {cartItems.map((item, idx) => (
+                                    <div
+                                        key={item.productId}
+                                        className={`cart-item p-3 ${idx < cartItems.length - 1 ? "border-bottom" : ""}`}
+                                    >
+                                        <div className="d-flex gap-3 align-items-start">
+                                            <Link to={`/products/${item.productId}`}>
+                                                <img
+                                                    src={item.image}
+                                                    alt={item.name}
+                                                    className="rounded-3"
+                                                    style={{
+                                                        width: 90,
+                                                        height: 70,
+                                                        objectFit: "cover",
+                                                        background: "#f1f5f9",
+                                                    }}
+                                                />
+                                            </Link>
+                                            <div className="flex-grow-1 min-w-0">
+                                                <Link
+                                                    to={`/products/${item.productId}`}
+                                                    className="text-decoration-none text-dark"
+                                                >
+                                                    <h6 className="fw-semibold mb-1 text-truncate">
+                                                        {item.name}
+                                                    </h6>
+                                                </Link>
+                                                <div className="d-flex align-items-center justify-content-between flex-wrap gap-2 mt-2">
+                                                    <div className="qty-control qty-sm">
+                                                        <button
+                                                            onClick={() =>
+                                                                updateQuantity(
+                                                                    item.productId,
+                                                                    item.quantity - 1,
+                                                                )
+                                                            }
+                                                            disabled={item.quantity <= 1}
+                                                        >
+                                                            <i className="bi bi-dash"></i>
+                                                        </button>
+                                                        <span>{item.quantity}</span>
+                                                        <button
+                                                            onClick={() =>
+                                                                updateQuantity(
+                                                                    item.productId,
+                                                                    item.quantity + 1,
+                                                                )
+                                                            }
+                                                            disabled={item.quantity >= item.stock}
+                                                        >
+                                                            <i className="bi bi-plus"></i>
+                                                        </button>
+                                                    </div>
                                                     <div className="d-flex align-items-center gap-3">
-                                                        <img
-                                                            src={item.image || 'https://via.placeholder.com/80x60'}
-                                                            alt={item.name}
-                                                            className="rounded border"
-                                                            style={{ width: '70px', height: '55px', objectFit: 'cover' }}
-                                                        />
-                                                        <div>
-                                                            <Link to={`/products/${item.productId}`} className="fw-medium text-decoration-none text-dark">
-                                                                {item.name}
-                                                            </Link>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                <td>{formatPrice(item.price)}</td>
-                                                <td style={{ width: '130px' }}>
-                                                    <div className="input-group input-group-sm">
+                                                        <span
+                                                            className="fw-bold"
+                                                            style={{ color: "#2563eb" }}
+                                                        >
+                                                            {formatPrice(item.price * item.quantity)}
+                                                        </span>
                                                         <button
-                                                            className="btn btn-outline-secondary"
-                                                            onClick={() => updateQuantity(item.productId, item.quantity - 1)}
-                                                        >-</button>
-                                                        <input
-                                                            type="text"
-                                                            className="form-control text-center bg-white"
-                                                            value={item.quantity}
-                                                            readOnly
-                                                        />
-                                                        <button
-                                                            className="btn btn-outline-secondary"
-                                                            onClick={() => updateQuantity(item.productId, item.quantity + 1)}
-                                                        >+</button>
+                                                            className="btn btn-sm btn-outline-danger"
+                                                            onClick={() => handleRemove(item.productId)}
+                                                        >
+                                                            <i className="bi bi-trash3"></i>
+                                                        </button>
                                                     </div>
-                                                </td>
-                                                <td className="text-end fw-bold text-primary">
-                                                    {formatPrice(item.price * item.quantity)}
-                                                </td>
-                                                <td className="text-end">
-                                                    <button
-                                                        className="btn btn-sm btn-outline-danger border-0"
-                                                        onClick={() => handleRemove(item.productId)}
-                                                        title="Xóa món này"
-                                                    >
-                                                        <i className="bi bi-trash"></i>
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
                             </div>
-
-                            <div className="d-flex justify-content-between mt-3 pt-3 border-top">
-                                <Link to="/" className="btn btn-outline-secondary btn-sm">
-                                    <i className="bi bi-arrow-left me-1"></i>Tiếp tục mua hàng
+                            <div className="card-footer bg-white d-flex justify-content-between align-items-center">
+                                <Link
+                                    to="/products"
+                                    className="btn btn-outline-secondary btn-sm"
+                                >
+                                    <i className="bi bi-arrow-left me-1"></i>Tiếp tục mua
                                 </Link>
-                                <button className="btn btn-outline-danger btn-sm" onClick={clearCart}>
-                                    <i className="bi bi-trash me-1"></i>Xóa tất cả
+                                <button
+                                    className="btn btn-outline-danger btn-sm"
+                                    onClick={handleClearCart}
+                                >
+                                    <i className="bi bi-trash3 me-1"></i>Xóa tất cả
                                 </button>
                             </div>
                         </div>
                     </div>
 
-                    {/* Hộp tóm tắt đơn hàng */}
+                    {/* Summary */}
                     <div className="col-lg-4">
-                        <div className="card shadow-sm border-0 p-4">
-                            <h5 className="fw-bold mb-3">Tóm tắt đơn hàng</h5>
+                        <div className="card border-0 shadow-sm">
+                            <div className="card-body">
+                                <h6 className="fw-bold mb-3">Tóm tắt đơn hàng</h6>
+                                <div className="d-flex justify-content-between mb-2 small">
+                                    <span className="text-muted">
+                                        Tạm tính ({cartItems.reduce((s, i) => s + i.quantity, 0)}{" "}
+                                        SP)
+                                    </span>
+                                    <span>{formatPrice(cartTotal)}</span>
+                                </div>
+                                <div className="d-flex justify-content-between mb-2 small">
+                                    <span className="text-muted">Phí vận chuyển</span>
+                                    <span className="text-success fw-medium">Miễn phí</span>
+                                </div>
+                                <hr />
+                                <div className="d-flex justify-content-between fw-bold mb-4">
+                                    <span>Tổng cộng</span>
+                                    <span className="fs-5" style={{ color: "#2563eb" }}>
+                                        {formatPrice(cartTotal)}
+                                    </span>
+                                </div>
+                                <button
+                                    className="btn btn-primary w-100 btn-lg"
+                                    onClick={handleCheckout}
+                                >
+                                    <i className="bi bi-bag-check me-2"></i>Thanh toán
+                                </button>
+                                {!user && (
+                                    <p className="small text-muted text-center mt-2">
+                                        <i className="bi bi-info-circle me-1"></i>Yêu cầu đăng nhập
+                                        để thanh toán
+                                    </p>
+                                )}
+                            </div>
+                        </div>
 
-                            <div className="d-flex justify-content-between mb-2">
-                                <span className="text-muted">Tổng tiền hàng:</span>
-                                <span className="fw-medium">{formatPrice(cartTotal)}</span>
+                        {/* Benefits */}
+                        <div className="card border-0 shadow-sm mt-3">
+                            <div className="card-body">
+                                {[
+                                    ["shield-check", "text-success", "Hàng chính hãng 100%"],
+                                    ["truck", "text-info", "Giao hàng miễn phí"],
+                                    ["arrow-counterclockwise", "text-warning", "Đổi trả 30 ngày"],
+                                ].map(([icon, cls, label]) => (
+                                    <div
+                                        key={label}
+                                        className={`d-flex align-items-center gap-2 mb-2 small ${cls}`}
+                                    >
+                                        <i className={`bi bi-${icon}`}></i>
+                                        <span className="text-dark">{label}</span>
+                                    </div>
+                                ))}
                             </div>
-                            <div className="d-flex justify-content-between mb-2">
-                                <span className="text-muted">Phí vận chuyển:</span>
-                                <span className="text-success fw-medium">Miễn phí</span>
-                            </div>
-                            <hr />
-                            <div className="d-flex justify-content-between mb-4">
-                                <span className="fw-bold fs-5">Thành tiền:</span>
-                                <span className="fw-bold fs-5 text-primary">{formatPrice(cartTotal)}</span>
-                            </div>
-
-                            <button
-                                className="btn btn-primary w-100 py-2 fw-medium"
-                                onClick={() => navigate('/checkout')}
-                            >
-                                Tiến hành thanh toán
-                            </button>
                         </div>
                     </div>
                 </div>
