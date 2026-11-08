@@ -556,38 +556,6 @@
         "new"
       ],
       "createdAt": "2024-03-20T07:00:00.000Z"
-    },
-    {
-      "name": "tào tháo rược",
-      "brand": "Apple",
-      "categoryId": 2,
-      "price": 5000,
-      "oldPrice": 234567,
-      "description": "ai ",
-      "specs": {
-        "cpu": "jdkhjd",
-        "ram": "16GB DDR5 4800MHz",
-        "storage": "1TB NVMe PCIe 4.0 SSD",
-        "display": "15.6\" FHD IPS 165Hz",
-        "gpu": "NVIDIA GeForce RTX 4070 8GB",
-        "battery": "90Wh, ~6 giờ",
-        "weight": "2.3 kg",
-        "os": "Windows 11 Home"
-      },
-      "images": [
-        "data:image/webp;base64,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"
-      ],
-      "stock": 100,
-      "visible": true,
-      "featured": true,
-      "tags": [
-        "new",
-        "hot"
-      ],
-      "rating": 0,
-      "reviewCount": 0,
-      "createdAt": "2026-03-26T01:02:22.676Z",
-      "id": "JnY2TXl6SgU"
     }
   ],
   "reviews": [
