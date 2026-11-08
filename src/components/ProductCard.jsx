@@ -7,9 +7,11 @@ import StarRating from './StarRating';
 const formatPrice = (price) =>
     new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
 
+// Component ProductCard: Hiển thị thẻ tóm tắt thông tin sản phẩm và nút thêm nhanh vào giỏ hàng
 const ProductCard = ({ product }) => {
     const { addToCart } = useCart();
 
+    // Xử lý thêm sản phẩm vào giỏ hàng mà không kích hoạt chuyển trang của thẻ Link bọc ngoài
     const handleAddToCart = (e) => {
         e.preventDefault();
         e.stopPropagation();
@@ -17,20 +19,22 @@ const ProductCard = ({ product }) => {
         toast.success(`Đã thêm "${product.name}" vào giỏ hàng!`, { position: 'bottom-right', autoClose: 2000 });
     };
 
+    // Tính phần trăm giảm giá nếu sản phẩm có giá gốc (oldPrice)
     const discount = product.oldPrice
         ? Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100)
         : null;
 
     return (
         <div className="product-card h-100">
+            {/* Liên kết điều hướng đến trang chi tiết sản phẩm */}
             <Link to={`/products/${product.id}`} className="text-decoration-none">
+                {/* Khối ảnh sản phẩm và các nhãn trạng thái (giảm giá, mới, hot, bán chạy) */}
                 <div className="product-img-wrap position-relative overflow-hidden">
                     <img
                         src={product.images?.[0]}
                         alt={product.name}
                         className="product-img"
                     />
-                    {/* Badges */}
                     <div className="position-absolute top-0 start-0 p-2 d-flex flex-column gap-1">
                         {discount && (
                             <span className="badge bg-danger">-{discount}%</span>
@@ -51,6 +55,7 @@ const ProductCard = ({ product }) => {
                         </div>
                     )}
                 </div>
+                {/* Khối thông tin sản phẩm: thương hiệu, tên, đánh giá sao, giá bán và cấu hình tóm tắt */}
                 <div className="product-body">
                     <p className="product-brand">{product.brand}</p>
                     <h6 className="product-name">{product.name}</h6>

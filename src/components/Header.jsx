@@ -3,11 +3,13 @@ import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 
+// Component Header: Thanh điều hướng chính (Menu trang, danh mục, giỏ hàng và menu tài khoản người dùng)
 const Header = () => {
     const { user, logout } = useAuth();
     const { cartCount } = useCart();
     const navigate = useNavigate();
 
+    // Xử lý đăng xuất tài khoản và quay về trang chủ
     const handleLogout = () => {
         logout();
         navigate('/');
@@ -16,6 +18,7 @@ const Header = () => {
     return (
         <nav className="navbar navbar-expand-lg navbar-dark sticky-top" style={{ background: 'linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%)', boxShadow: '0 2px 20px rgba(0,0,0,0.3)' }}>
             <div className="container">
+                {/* Logo thương hiệu điều hướng về trang chủ */}
                 <Link className="navbar-brand d-flex align-items-center gap-2" to="/">
                     <div className="brand-icon">
                         <i className="bi bi-laptop"></i>
@@ -30,6 +33,7 @@ const Header = () => {
                     <span className="navbar-toggler-icon"></span>
                 </button>
 
+                {/* Menu điều hướng chính và dropdown lọc nhanh theo danh mục */}
                 <div className="collapse navbar-collapse" id="navMenu">
                     <ul className="navbar-nav me-auto mb-2 mb-lg-0">
                         <li className="nav-item">
@@ -53,7 +57,7 @@ const Header = () => {
                     </ul>
 
                     <div className="d-flex align-items-center gap-3">
-                        {/* Cart */}
+                        {/* Nút giỏ hàng kèm badge hiển thị tổng số lượng sản phẩm */}
                         <Link to="/cart" className="btn btn-outline-light btn-sm position-relative">
                             <i className="bi bi-cart3 fs-5"></i>
                             {cartCount > 0 && (
@@ -63,7 +67,7 @@ const Header = () => {
                             )}
                         </Link>
 
-                        {/* User menu */}
+                        {/* Menu người dùng: hiển thị thông tin cá nhân/Admin nếu đã đăng nhập, hoặc nút Đăng nhập/Đăng ký */}
                         {user ? (
                             <div className="dropdown">
                                 <button className="btn btn-sm d-flex align-items-center gap-2 text-white border border-secondary rounded-pill px-3" data-bs-toggle="dropdown">

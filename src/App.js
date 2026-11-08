@@ -29,12 +29,14 @@ import AdminReviews from './pages/admin/AdminReviews';
 import './App.css';
 import 'react-toastify/dist/ReactToastify.css';
 
+// Tự động cuộn lên đầu trang mỗi khi chuyển đổi đường dẫn (route)
 const ScrollToTop = () => {
   const { pathname } = useLocation();
   useEffect(() => { window.scrollTo(0, 0); }, [pathname]);
   return null;
 };
 
+// Bố cục chung cho các trang người dùng (gồm Header, nội dung chính và Footer)
 const MainLayout = ({ children }) => (
   <div className="site-wrapper">
     <Header />
@@ -43,6 +45,7 @@ const MainLayout = ({ children }) => (
   </div>
 );
 
+// Component App: Cấu hình Context toàn cục (Auth, Cart) và phân luồng định tuyến (Public, Protected, Admin)
 function App() {
   return (
     <BrowserRouter>
@@ -50,7 +53,7 @@ function App() {
         <CartProvider>
           <ScrollToTop />
           <Routes>
-            {/* Public routes with header/footer */}
+            {/* Các đường dẫn công khai (Public routes) */}
             <Route path="/" element={<MainLayout><Home /></MainLayout>} />
             <Route path="/products" element={<MainLayout><Products /></MainLayout>} />
             <Route path="/products/:id" element={<MainLayout><ProductDetail /></MainLayout>} />
@@ -58,12 +61,12 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
 
-            {/* Protected user routes */}
+            {/* Các đường dẫn yêu cầu đăng nhập (Protected user routes) */}
             <Route path="/checkout" element={<ProtectedRoute><MainLayout><Checkout /></MainLayout></ProtectedRoute>} />
             <Route path="/profile" element={<ProtectedRoute><MainLayout><Profile /></MainLayout></ProtectedRoute>} />
             <Route path="/orders" element={<ProtectedRoute><MainLayout><Orders /></MainLayout></ProtectedRoute>} />
 
-            {/* Admin routes */}
+            {/* Các đường dẫn dành riêng cho quản trị viên (Admin routes) */}
             <Route path="/admin" element={<AdminRoute><AdminLayout /></AdminRoute>}>
               <Route index element={<Dashboard />} />
               <Route path="products" element={<AdminProducts />} />

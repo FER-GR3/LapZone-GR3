@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 
+// Component AdminLayout: Khung bố cục trang quản trị gồm thanh Sidebar điều hướng bên trái và vùng nội dung chính (Outlet)
 const AdminLayout = () => {
     const { user, logout } = useAuth();
     const location = useLocation();
@@ -16,6 +17,7 @@ const AdminLayout = () => {
         { path: '/admin/reviews', icon: 'star', label: 'Đánh giá' },
     ];
 
+    // Kiểm tra mục menu hiện tại có đang được kích hoạt (active) theo đường dẫn URL hay không
     const isActive = (path, exact) => exact ? location.pathname === path : location.pathname.startsWith(path);
 
     return (

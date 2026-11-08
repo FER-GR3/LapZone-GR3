@@ -12,6 +12,7 @@ const PRICE_RANGES = [
     { label: 'Trên 50 triệu', min: 50000000, max: 999000000 },
 ];
 
+// Component Products: Trang danh sách sản phẩm với chức năng tìm kiếm, lọc đa tiêu chí, sắp xếp và phân trang
 const Products = () => {
     const [searchParams, setSearchParams] = useSearchParams();
     const [products, setProducts] = useState([]);
@@ -31,10 +32,12 @@ const Products = () => {
     const [searchInput, setSearchInput] = useState(searchParams.get('q') || '');
     const limit = 12;
 
+    // Tải danh sách danh mục để hiển thị ở bộ lọc bên trái
     useEffect(() => {
         getCategories().then(setCategories);
     }, []);
 
+    // Luồng lấy dữ liệu sản phẩm: truy vấn API theo bộ lọc -> lọc theo khoảng giá -> sắp xếp -> cắt trang (pagination)
     const fetchProducts = useCallback(async () => {
         setLoading(true);
         try {
@@ -46,13 +49,13 @@ const Products = () => {
 
             let data = await getProducts(params);
 
-            // Price filter client-side
+            // Lọc sản phẩm theo khoảng giá phía client
             if (filters.priceRange) {
                 const range = PRICE_RANGES.find(r => r.label === filters.priceRange);
                 if (range) data = data.filter(p => p.price >= range.min && p.price <= range.max);
             }
 
-            // Sort
+            // Sắp xếp danh sách sản phẩm theo tiêu chí đã chọn
             if (sort === 'price_asc') data.sort((a, b) => a.price - b.price);
             else if (sort === 'price_desc') data.sort((a, b) => b.price - a.price);
             else if (sort === 'rating') data.sort((a, b) => b.rating - a.rating);
@@ -68,11 +71,13 @@ const Products = () => {
 
     useEffect(() => { fetchProducts(); }, [fetchProducts]);
 
+    // Cập nhật tiêu chí lọc và đưa trang hiện tại về trang 1
     const updateFilter = (key, value) => {
         setFilters(prev => ({ ...prev, [key]: value }));
         setPage(1);
     };
 
+    // Đặt lại toàn bộ bộ lọc và từ khóa tìm kiếm về mặc định
     const clearFilters = () => {
         setFilters({ category: '', brand: '', priceRange: '', tag: '', search: '' });
         setSearchInput('');
@@ -80,6 +85,7 @@ const Products = () => {
         setSearchParams({});
     };
 
+    // Xử lý sự kiện tìm kiếm sản phẩm theo từ khóa
     const handleSearch = (e) => {
         e.preventDefault();
         updateFilter('search', searchInput);

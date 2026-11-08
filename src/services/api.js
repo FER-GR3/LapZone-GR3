@@ -1,5 +1,6 @@
 const BASE_URL = 'http://localhost:5000';
 
+// Hàm dùng chung để gửi HTTP request tới JSON Server và xử lý kết quả trả về dạng JSON
 const request = async (url, options = {}) => {
     const res = await fetch(`${BASE_URL}${url}`, {
         headers: { 'Content-Type': 'application/json', ...options.headers },
@@ -9,14 +10,14 @@ const request = async (url, options = {}) => {
     return res.json();
 };
 
-// Categories
+// Nhóm API quản lý Danh mục sản phẩm (Categories CRUD)
 export const getCategories = () => request('/categories');
 export const getCategoryById = (id) => request(`/categories/${id}`);
 export const createCategory = (data) => request('/categories', { method: 'POST', body: JSON.stringify(data) });
 export const updateCategory = (id, data) => request(`/categories/${id}`, { method: 'PUT', body: JSON.stringify(data) });
 export const deleteCategory = (id) => request(`/categories/${id}`, { method: 'DELETE' });
 
-// Products
+// Nhóm API quản lý Sản phẩm và lọc theo tham số truy vấn (Products CRUD)
 export const getProducts = (params = {}) => {
     const query = new URLSearchParams();
     Object.entries(params).forEach(([k, v]) => v !== undefined && v !== '' && query.append(k, v));
@@ -27,7 +28,7 @@ export const createProduct = (data) => request('/products', { method: 'POST', bo
 export const updateProduct = (id, data) => request(`/products/${id}`, { method: 'PUT', body: JSON.stringify(data) });
 export const deleteProduct = (id) => request(`/products/${id}`, { method: 'DELETE' });
 
-// Reviews
+// Nhóm API quản lý Đánh giá sản phẩm (Reviews CRUD)
 export const getReviews = (params = {}) => {
     const query = new URLSearchParams(params);
     return request(`/reviews?${query.toString()}`);
@@ -36,7 +37,7 @@ export const createReview = (data) => request('/reviews', { method: 'POST', body
 export const updateReview = (id, data) => request(`/reviews/${id}`, { method: 'PUT', body: JSON.stringify(data) });
 export const deleteReview = (id) => request(`/reviews/${id}`, { method: 'DELETE' });
 
-// Orders
+// Nhóm API quản lý Đơn hàng (Orders CRUD)
 export const getOrders = (params = {}) => {
     const query = new URLSearchParams(params);
     return request(`/orders?${query.toString()}`);
@@ -46,7 +47,7 @@ export const createOrder = (data) => request('/orders', { method: 'POST', body: 
 export const updateOrder = (id, data) => request(`/orders/${id}`, { method: 'PUT', body: JSON.stringify(data) });
 export const deleteOrder = (id) => request(`/orders/${id}`, { method: 'DELETE' });
 
-// Users
+// Nhóm API quản lý Người dùng và xác thực (Users CRUD)
 export const getUsers = () => request('/users');
 export const getUserById = (id) => request(`/users/${id}`);
 export const getUserByEmail = (email) => request(`/users?email=${encodeURIComponent(email)}`);

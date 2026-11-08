@@ -3,6 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { toast } from 'react-toastify';
 
+// Component Login: Quản lý luồng đăng nhập người dùng và điều hướng về trang trước đó
 const Login = () => {
     const { login } = useAuth();
     const navigate = useNavigate();
@@ -14,6 +15,7 @@ const Login = () => {
     const [loading, setLoading] = useState(false);
     const [showPass, setShowPass] = useState(false);
 
+    // Kiểm tra định dạng email và mật khẩu không được để trống
     const validate = () => {
         const e = {};
         if (!form.email) e.email = 'Vui lòng nhập email';
@@ -23,12 +25,14 @@ const Login = () => {
         return Object.keys(e).length === 0;
     };
 
+    // Cập nhật giá trị input vào state form và xóa lỗi của trường đang nhập
     const handleChange = (e) => {
         const { name, value } = e.target;
         setForm(prev => ({ ...prev, [name]: value }));
         if (errors[name]) setErrors(prev => ({ ...prev, [name]: '' }));
     };
 
+    // Xử lý đăng nhập: kiểm tra hợp lệ -> gọi hàm login từ AuthContext -> chuyển hướng trang
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!validate()) return;
@@ -44,6 +48,7 @@ const Login = () => {
         }
     };
 
+    // Điền nhanh thông tin tài khoản mẫu (User hoặc Admin) để phục vụ kiểm thử
     const fillDemo = (role) => {
         if (role === 'admin') setForm({ email: 'admin@laptopzone.vn', password: 'admin123' });
         else setForm({ email: 'user@laptopzone.vn', password: 'user123' });

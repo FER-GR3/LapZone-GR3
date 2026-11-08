@@ -8,6 +8,7 @@ const STATUSES = ['Pending', 'Processing', 'Shipping', 'Delivered', 'Cancelled']
 const STATUS_COLORS = { Pending: 'warning', Processing: 'info', Shipping: 'primary', Delivered: 'success', Cancelled: 'danger' };
 const STATUS_LABELS = { Pending: 'Chờ duyệt', Processing: 'Đang xử lý', Shipping: 'Đang giao', Delivered: 'Đã giao', Cancelled: 'Đã huỷ' };
 
+// Component AdminOrders: Quản lý đơn hàng phía Admin (Lọc theo trạng thái, xem chi tiết, duyệt/cập nhật tiến trình giao hàng và xóa)
 const AdminOrders = () => {
     const [orders, setOrders] = useState([]);
     const [users, setUsers] = useState({});
@@ -16,6 +17,7 @@ const AdminOrders = () => {
     const [statusFilter, setStatusFilter] = useState('');
     const [processingId, setProcessingId] = useState(null);
 
+    // Tải danh sách đơn hàng và ánh xạ thông tin khách hàng tương ứng
     const load = async () => {
         setLoading(true);
         try {
@@ -33,6 +35,7 @@ const AdminOrders = () => {
 
     useEffect(() => { load(); }, []);
 
+    // Cập nhật trạng thái đơn hàng theo quy trình (Pending -> Processing -> Shipping -> Delivered / Cancelled)
     const handleStatusChange = async (order, newStatus) => {
         setProcessingId(order.id);
         try {
@@ -46,6 +49,7 @@ const AdminOrders = () => {
         }
     };
 
+    // Xác nhận và xóa đơn hàng khỏi hệ thống
     const handleDelete = async (order) => {
         if (!window.confirm(`Xoá đơn hàng #${order.id}?`)) return;
         try {

@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { toast } from 'react-toastify';
 
+// Component Register: Quản lý luồng đăng ký tài khoản mới (Nhập liệu -> Kiểm tra hợp lệ -> Gọi API đăng ký -> Điều hướng)
 const Register = () => {
     const { register } = useAuth();
     const navigate = useNavigate();
@@ -11,6 +12,7 @@ const Register = () => {
     const [loading, setLoading] = useState(false);
     const [showPass, setShowPass] = useState(false);
 
+    // Kiểm tra tính hợp lệ của các trường thông tin trước khi gửi form
     const validate = () => {
         const e = {};
         if (!form.name.trim()) e.name = 'Vui lòng nhập họ tên';
@@ -24,12 +26,14 @@ const Register = () => {
         return Object.keys(e).length === 0;
     };
 
+    // Cập nhật dữ liệu form khi người dùng nhập và xóa lỗi của trường tương ứng
     const handleChange = (e) => {
         const { name, value } = e.target;
         setForm(prev => ({ ...prev, [name]: value }));
         if (errors[name]) setErrors(prev => ({ ...prev, [name]: '' }));
     };
 
+    // Xử lý sự kiện submit: kiểm tra dữ liệu -> gọi API tạo tài khoản -> thông báo và chuyển về trang chủ
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!validate()) return;
@@ -48,6 +52,7 @@ const Register = () => {
     return (
         <div className="auth-page d-flex align-items-center justify-content-center py-5">
             <div className="auth-card">
+                {/* Khối tiêu đề và logo điều hướng về trang chủ */}
                 <div className="text-center mb-4">
                     <Link to="/" className="d-inline-flex align-items-center gap-2 text-decoration-none mb-3">
                         <i className="bi bi-laptop fs-3" style={{ color: '#38bdf8' }}></i>
@@ -57,7 +62,9 @@ const Register = () => {
                     <p className="text-muted small">Đăng ký để mua sắm dễ dàng hơn</p>
                 </div>
 
+                {/* Form nhập thông tin đăng ký */}
                 <form onSubmit={handleSubmit}>
+                    {/* Render các trường thông tin cơ bản: Họ tên, Email, Số điện thoại */}
                     {[
                         { label: 'Họ và tên', name: 'name', type: 'text', icon: 'person', placeholder: 'Nguyễn Văn A', required: true },
                         { label: 'Email', name: 'email', type: 'email', icon: 'envelope', placeholder: 'email@example.com', required: true },
@@ -80,6 +87,7 @@ const Register = () => {
                         </div>
                     ))}
 
+                    {/* Khối nhập mật khẩu và nút ẩn/hiện mật khẩu */}
                     <div className="mb-3">
                         <label className="form-label small fw-medium">Mật khẩu *</label>
                         <div className="input-group">
@@ -92,6 +100,7 @@ const Register = () => {
                         </div>
                     </div>
 
+                    {/* Khối xác nhận lại mật khẩu */}
                     <div className="mb-4">
                         <label className="form-label small fw-medium">Xác nhận mật khẩu *</label>
                         <div className="input-group">
@@ -106,6 +115,7 @@ const Register = () => {
                     </button>
                 </form>
 
+                {/* Liên kết chuyển sang trang đăng nhập */}
                 <p className="text-center mt-3 small text-muted">
                     Đã có tài khoản? <Link to="/login" className="text-primary fw-medium text-decoration-none">Đăng nhập</Link>
                 </p>

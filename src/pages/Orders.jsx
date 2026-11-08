@@ -16,6 +16,7 @@ const STATUS_CONFIG = {
     Cancelled: { label: 'Đã huỷ', color: 'danger', icon: 'x-circle-fill' },
 };
 
+// Component Orders: Hiển thị lịch sử đơn hàng của người dùng, xem chi tiết và hủy đơn khi đang chờ xác nhận
 const Orders = () => {
     const { user } = useAuth();
     const [orders, setOrders] = useState([]);
@@ -23,6 +24,7 @@ const Orders = () => {
     const [expandedOrder, setExpandedOrder] = useState(null);
     const [cancelling, setCancelling] = useState(null);
 
+    // Tải danh sách đơn hàng của người dùng hiện tại và sắp xếp mới nhất lên đầu
     const loadOrders = async () => {
         setLoading(true);
         try {
@@ -35,6 +37,7 @@ const Orders = () => {
 
     useEffect(() => { loadOrders(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
+    // Xử lý hủy đơn hàng (chỉ áp dụng cho đơn hàng đang ở trạng thái Pending)
     const handleCancel = async (order) => {
         if (!window.confirm('Bạn có chắc muốn huỷ đơn hàng này?')) return;
         setCancelling(order.id);

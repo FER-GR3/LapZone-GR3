@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { toast } from 'react-toastify';
 
+// Component Profile: Quản lý thông tin hồ sơ cá nhân và chức năng đổi mật khẩu của người dùng
 const Profile = () => {
     const { user, updateProfile } = useAuth();
     const [form, setForm] = useState({
@@ -16,12 +17,14 @@ const Profile = () => {
     const [saving, setSaving] = useState(false);
     const [activeTab, setActiveTab] = useState('info');
 
+    // Cập nhật dữ liệu form khi người dùng thay đổi nội dung các ô nhập liệu
     const handleChange = (e) => {
         const { name, value } = e.target;
         setForm(prev => ({ ...prev, [name]: value }));
         if (errors[name]) setErrors(prev => ({ ...prev, [name]: '' }));
     };
 
+    // Luồng cập nhật thông tin cá nhân (họ tên, số điện thoại, địa chỉ)
     const handleSaveInfo = async (e) => {
         e.preventDefault();
         const e2 = {};
@@ -40,6 +43,7 @@ const Profile = () => {
         }
     };
 
+    // Luồng kiểm tra mật khẩu hiện tại và cập nhật mật khẩu mới
     const handleChangePassword = async (e) => {
         e.preventDefault();
         const e2 = {};

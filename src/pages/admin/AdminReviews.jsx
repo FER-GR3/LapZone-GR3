@@ -3,12 +3,14 @@ import { getReviews, updateReview, deleteReview } from '../../services/api';
 import { toast } from 'react-toastify';
 import StarRating from '../../components/StarRating';
 
+// Component AdminReviews: Quản lý đánh giá của khách hàng (Lọc trạng thái, ẩn/hiện đánh giá vi phạm hoặc xóa)
 const AdminReviews = () => {
     const [reviews, setReviews] = useState([]);
     const [products, setProducts] = useState({});
     const [loading, setLoading] = useState(true);
     const [filter, setFilter] = useState('all'); // all, visible, hidden
 
+    // Tải danh sách đánh giá kèm thông tin sản phẩm tương ứng
     const load = async () => {
         setLoading(true);
         const [revs, prods] = await Promise.all([getReviews(), import('../../services/api').then(m => m.getProducts())]);
@@ -21,12 +23,14 @@ const AdminReviews = () => {
 
     useEffect(() => { load(); }, []);
 
+    // Chuyển đổi trạng thái ẩn / hiện của một đánh giá trên trang chi tiết sản phẩm
     const toggleVisible = async (review) => {
         await updateReview(review.id, { ...review, visible: !review.visible });
         toast.success(review.visible ? 'Đã ẩn đánh giá' : 'Đã hiện đánh giá');
         load();
     };
 
+    // Xóa vĩnh viễn đánh giá khỏi hệ thống
     const handleDelete = async (review) => {
         if (!window.confirm('Xoá đánh giá này?')) return;
         await deleteReview(review.id);

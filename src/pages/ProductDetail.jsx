@@ -8,6 +8,7 @@ import { toast } from 'react-toastify';
 
 const formatPrice = (p) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(p);
 
+// Component ProductDetail: Hiển thị thông tin chi tiết sản phẩm, cấu hình, thêm vào giỏ và gửi đánh giá
 const ProductDetail = () => {
     const { id } = useParams();
     const navigate = useNavigate();
@@ -21,13 +22,14 @@ const ProductDetail = () => {
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState('desc');
 
-    // Review form
+    // State quản lý form gửi đánh giá sản phẩm
     const [reviewRating, setReviewRating] = useState(5);
     const [reviewComment, setReviewComment] = useState('');
     const [submitting, setSubmitting] = useState(false);
     const [, setHasPurchased] = useState(false);
     const [hasReviewed, setHasReviewed] = useState(false);
 
+    // Tải thông tin sản phẩm, danh sách đánh giá và kiểm tra trạng thái đã mua / đã đánh giá của user
     useEffect(() => {
         window.scrollTo(0, 0);
         const load = async () => {
@@ -57,16 +59,19 @@ const ProductDetail = () => {
         load();
     }, [id, user]);
 
+    // Thêm sản phẩm với số lượng đã chọn vào giỏ hàng
     const handleAddToCart = () => {
         addToCart(product, qty);
         toast.success(`Đã thêm ${qty} "${product.name}" vào giỏ!`, { position: 'bottom-right', autoClose: 2000 });
     };
 
+    // Thêm sản phẩm vào giỏ và chuyển thẳng đến trang giỏ hàng để thanh toán
     const handleBuyNow = () => {
         addToCart(product, qty);
         navigate('/cart');
     };
 
+    // Xử lý gửi đánh giá mới và tính toán lại điểm đánh giá trung bình của sản phẩm
     const handleSubmitReview = async (e) => {
         e.preventDefault();
         if (!user) { navigate('/login'); return; }

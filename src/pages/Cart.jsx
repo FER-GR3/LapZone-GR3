@@ -9,12 +9,14 @@ const formatPrice = (p) =>
         p,
     );
 
+// Component Cart: Quản lý giao diện giỏ hàng (tăng/giảm số lượng, xóa sản phẩm và chuyển sang thanh toán)
 const Cart = () => {
     const { cartItems, removeFromCart, updateQuantity, cartTotal, clearCart } =
         useCart();
     const { user } = useAuth();
     const navigate = useNavigate();
 
+    // Xác nhận và xóa một sản phẩm khỏi giỏ hàng
     const handleRemove = (id) => {
         const confirmDelete = window.confirm(
             "Bạn có chắc muốn xóa sản phẩm này khỏi giỏ hàng không?",
@@ -25,6 +27,7 @@ const Cart = () => {
         toast.success("Đã xóa sản phẩm khỏi giỏ hàng!");
     };
 
+    // Xác nhận và xóa toàn bộ sản phẩm trong giỏ hàng
     const handleClearCart = () => {
         const confirmDelete = window.confirm(
             "Bạn có chắc muốn xóa tất cả sản phẩm trong giỏ hàng không?",
@@ -35,6 +38,7 @@ const Cart = () => {
         toast.success("Đã xóa toàn bộ giỏ hàng!");
     };
 
+    // Kiểm tra đăng nhập trước khi điều hướng sang trang thanh toán (Checkout)
     const handleCheckout = () => {
         if (!user) {
             navigate("/login", { state: { from: { pathname: "/checkout" } } });

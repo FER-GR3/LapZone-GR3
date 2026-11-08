@@ -6,11 +6,13 @@ const formatPrice = (p) => new Intl.NumberFormat('vi-VN', { style: 'currency', c
 
 const STATUS_COLORS = { Pending: 'warning', Processing: 'info', Shipping: 'primary', Delivered: 'success', Cancelled: 'danger' };
 
+// Component Dashboard: Trang tổng quan quản trị hiển thị thống kê số lượng, tổng doanh thu và các đơn hàng gần đây
 const Dashboard = () => {
     const [stats, setStats] = useState({ products: 0, orders: 0, users: 0, reviews: 0, revenue: 0 });
     const [recentOrders, setRecentOrders] = useState([]);
     const [loading, setLoading] = useState(true);
 
+    // Tải đồng thời dữ liệu sản phẩm, đơn hàng, người dùng, đánh giá và tính tổng doanh thu
     useEffect(() => {
         const load = async () => {
             const [products, orders, users, reviews] = await Promise.all([

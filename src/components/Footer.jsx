@@ -1,11 +1,13 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
+// Component Footer: Hiển thị chân trang gồm thông tin thương hiệu, điều hướng danh mục, chính sách hỗ trợ và liên hệ
 const Footer = () => {
     return (
         <footer style={{ background: 'linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%)', color: '#94a3b8' }}>
             <div className="container py-5">
                 <div className="row g-4">
+                    {/* Khối giới thiệu thương hiệu và liên kết mạng xã hội */}
                     <div className="col-lg-4 col-md-6">
                         <div className="d-flex align-items-center gap-2 mb-3">
                             <i className="bi bi-laptop fs-3" style={{ color: '#38bdf8' }}></i>
@@ -27,6 +29,7 @@ const Footer = () => {
                         </div>
                     </div>
 
+                    {/* Khối điều hướng nhanh đến các danh mục sản phẩm */}
                     <div className="col-lg-2 col-md-6">
                         <h6 className="text-white fw-bold mb-3 text-uppercase" style={{ letterSpacing: 1 }}>Danh mục</h6>
                         <ul className="list-unstyled">
@@ -38,6 +41,7 @@ const Footer = () => {
                         </ul>
                     </div>
 
+                    {/* Khối liên kết các chính sách và hướng dẫn hỗ trợ khách hàng */}
                     <div className="col-lg-3 col-md-6">
                         <h6 className="text-white fw-bold mb-3 text-uppercase" style={{ letterSpacing: 1 }}>Hỗ trợ</h6>
                         <ul className="list-unstyled">
@@ -49,6 +53,7 @@ const Footer = () => {
                         </ul>
                     </div>
 
+                    {/* Khối thông tin địa chỉ, hotline, email và thời gian làm việc */}
                     <div className="col-lg-3 col-md-6">
                         <h6 className="text-white fw-bold mb-3 text-uppercase" style={{ letterSpacing: 1 }}>Liên hệ</h6>
                         <ul className="list-unstyled small">
@@ -60,6 +65,7 @@ const Footer = () => {
                     </div>
                 </div>
             </div>
+            {/* Khối bản quyền và biểu tượng các phương thức thanh toán */}
             <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)' }}>
                 <div className="container py-3">
                     <div className="d-flex flex-wrap justify-content-between align-items-center gap-2">

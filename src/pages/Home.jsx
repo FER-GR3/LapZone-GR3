@@ -5,6 +5,7 @@ import ProductCard from '../components/ProductCard';
 
 const BRANDS = ['ASUS', 'MSI', 'Lenovo', 'Dell', 'HP', 'Apple', 'Acer', 'Razer', 'LG', 'Microsoft'];
 
+// Component Home: Trang chủ hiển thị banner, thương hiệu, danh mục, flash sale và sản phẩm nổi bật
 const Home = () => {
     const [featuredProducts, setFeaturedProducts] = useState([]);
     const [flashSaleProducts, setFlashSaleProducts] = useState([]);
@@ -12,6 +13,7 @@ const Home = () => {
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
 
+    // Tải dữ liệu danh mục và lọc danh sách sản phẩm nổi bật / khuyến mãi từ API khi mở trang
     useEffect(() => {
         const load = async () => {
             try {

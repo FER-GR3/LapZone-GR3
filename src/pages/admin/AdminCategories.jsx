@@ -4,6 +4,7 @@ import { toast } from 'react-toastify';
 
 const EMPTY_FORM = { name: '', slug: '', description: '', image: '' };
 
+// Component AdminCategories: Quản lý danh mục sản phẩm (Xem danh sách, thêm mới, chỉnh sửa, tự động tạo slug và xóa)
 const AdminCategories = () => {
     const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -12,6 +13,7 @@ const AdminCategories = () => {
     const [form, setForm] = useState(EMPTY_FORM);
     const [saving, setSaving] = useState(false);
 
+    // Tải danh sách danh mục từ API
     const load = async () => {
         setLoading(true);
         setCategories(await getCategories());
@@ -20,11 +22,13 @@ const AdminCategories = () => {
 
     useEffect(() => { load(); }, []);
 
+    // Mở modal ở chế độ thêm mới hoặc chỉnh sửa danh mục
     const openCreate = () => { setEditing(null); setForm(EMPTY_FORM); setShowModal(true); };
     const openEdit = (cat) => { setEditing(cat); setForm({ ...cat }); setShowModal(true); };
 
     const handleChange = (e) => setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
 
+    // Tự động chuyển đổi tên danh mục tiếng Việt có dấu thành chuỗi slug không dấu
     const autoSlug = (name) => {
         const s = name.toLowerCase()
             .replace(/[àáạảãâầấậẩẫăằắặẳẵ]/g, 'a')
@@ -39,6 +43,7 @@ const AdminCategories = () => {
         setForm(prev => ({ ...prev, name, slug: s }));
     };
 
+    // Lưu thông tin danh mục (gọi API cập nhật nếu đang sửa, hoặc tạo mới nếu thêm mới)
     const handleSave = async (e) => {
         e.preventDefault();
         if (!form.name.trim()) { toast.error('Vui lòng nhập tên danh mục'); return; }
@@ -60,6 +65,7 @@ const AdminCategories = () => {
         }
     };
 
+    // Xác nhận và xóa danh mục khỏi hệ thống
     const handleDelete = async (cat) => {
         if (!window.confirm(`Xoá danh mục "${cat.name}"?`)) return;
         await deleteCategory(cat.id);

@@ -10,6 +10,7 @@ const EMPTY_FORM = {
     images: [''], stock: '', visible: true, featured: false, tags: [],
 };
 
+// Component AdminProducts: Quản lý toàn bộ vòng đời sản phẩm (Danh sách, tìm kiếm, thêm/sửa thông số & hình ảnh, ẩn/hiện, xóa)
 const AdminProducts = () => {
     const [products, setProducts] = useState([]);
     const [categories, setCategories] = useState([]);
@@ -22,6 +23,7 @@ const AdminProducts = () => {
     const [imgMode, setImgMode] = useState('url'); // 'url' or 'file'
     const fileInputRef = useRef(null);
 
+    // Tải danh sách sản phẩm và danh mục từ API
     const load = async () => {
         setLoading(true);
         const [prods, cats] = await Promise.all([getProducts(), getCategories()]);
@@ -32,6 +34,7 @@ const AdminProducts = () => {
 
     useEffect(() => { load(); }, []);
 
+    // Khởi tạo dữ liệu form và mở modal thêm sản phẩm mới
     const openCreate = () => {
         setEditing(null);
         setForm(EMPTY_FORM);
@@ -39,6 +42,7 @@ const AdminProducts = () => {
         setShowModal(true);
     };
 
+    // Đổ dữ liệu sản phẩm cần sửa vào form và mở modal chỉnh sửa
     const openEdit = (product) => {
         setEditing(product);
         setForm({
@@ -53,6 +57,7 @@ const AdminProducts = () => {
         setShowModal(true);
     };
 
+    // Các hàm xử lý cập nhật thông tin cơ bản, thông số kỹ thuật (specs), hình ảnh (URL/Base64) và nhãn (tags)
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
         setForm(prev => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
@@ -91,6 +96,7 @@ const AdminProducts = () => {
         }));
     };
 
+    // Lưu sản phẩm: chuẩn hóa dữ liệu số -> gọi API thêm mới hoặc cập nhật -> tải lại danh sách
     const handleSave = async (e) => {
         e.preventDefault();
         if (!form.name || !form.price || !form.categoryId) { toast.error('Vui lòng điền đầy đủ thông tin bắt buộc'); return; }
@@ -123,6 +129,7 @@ const AdminProducts = () => {
         }
     };
 
+    // Xóa sản phẩm hoặc bật/tắt trạng thái hiển thị (visible) của sản phẩm trên trang khách hàng
     const handleDelete = async (product) => {
         if (!window.confirm(`Xoá sản phẩm "${product.name}"?`)) return;
         await deleteProduct(product.id);

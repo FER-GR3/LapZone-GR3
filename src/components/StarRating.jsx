@@ -1,5 +1,6 @@
 import React from 'react';
 
+// Component StarRating: Hiển thị mức sao đánh giá (chế độ xem) hoặc cho phép chọn số sao (khi có hàm onChange)
 const StarRating = ({ value = 0, onChange, size = 'md', showValue = false }) => {
     const stars = [1, 2, 3, 4, 5];
     const starSize = size === 'sm' ? '0.85rem' : size === 'lg' ? '1.5rem' : '1.1rem';

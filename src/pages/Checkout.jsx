@@ -7,6 +7,7 @@ import { toast } from 'react-toastify';
 
 const formatPrice = (p) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(p);
 
+// Component Checkout: Quản lý luồng thanh toán và tạo đơn hàng mới (Nhập thông tin giao hàng -> Kiểm tra -> Tạo đơn)
 const Checkout = () => {
     const { cartItems, cartTotal, clearCart } = useCart();
     const { user } = useAuth();
@@ -21,6 +22,7 @@ const Checkout = () => {
     const [submitting, setSubmitting] = useState(false);
     const [errors, setErrors] = useState({});
 
+    // Kiểm tra hợp lệ thông tin người nhận (họ tên, số điện thoại 10 số, địa chỉ giao hàng)
     const validate = () => {
         const e = {};
         if (!form.name.trim()) e.name = 'Vui lòng nhập họ tên';
@@ -31,12 +33,14 @@ const Checkout = () => {
         return Object.keys(e).length === 0;
     };
 
+    // Cập nhật thông tin giao hàng khi người dùng nhập và xóa thông báo lỗi tương ứng
     const handleChange = (e) => {
         const { name, value } = e.target;
         setForm(prev => ({ ...prev, [name]: value }));
         if (errors[name]) setErrors(prev => ({ ...prev, [name]: '' }));
     };
 
+    // Xử lý đặt hàng: kiểm tra dữ liệu -> gọi API tạo đơn hàng COD -> xóa giỏ hàng và chuyển tới trang Đơn hàng
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!validate()) return;
