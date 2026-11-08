@@ -52,9 +52,9 @@ const Footer = () => {
                     <div className="col-lg-3 col-md-6">
                         <h6 className="text-white fw-bold mb-3 text-uppercase" style={{ letterSpacing: 1 }}>Liên hệ</h6>
                         <ul className="list-unstyled small">
-                            <li className="mb-2 d-flex gap-2"><i className="bi bi-geo-alt-fill" style={{ color: '#38bdf8' }}></i><span>123 Nguyễn Huệ, Quận 1, TP.HCM</span></li>
+                            <li className="mb-2 d-flex gap-2"><i className="bi bi-geo-alt-fill" style={{ color: '#38bdf8' }}></i><span>số 600 đường Nguyễn Văn Cừ, An Bình, Cần Thơ</span></li>
                             <li className="mb-2 d-flex gap-2"><i className="bi bi-telephone-fill" style={{ color: '#38bdf8' }}></i><span>1800 1234 (Miễn phí)</span></li>
-                            <li className="mb-2 d-flex gap-2"><i className="bi bi-envelope-fill" style={{ color: '#38bdf8' }}></i><span>support@laptopzone.vn</span></li>
+                            <li className="mb-2 d-flex gap-2"><i className="bi bi-envelope-fill" style={{ color: '#38bdf8' }}></i><span>supportg3fer@laptopzone.vn</span></li>
                             <li className="mb-2 d-flex gap-2"><i className="bi bi-clock-fill" style={{ color: '#38bdf8' }}></i><span>8:00 - 21:00 (T2 - CN)</span></li>
                         </ul>
                     </div>
@@ -63,7 +63,7 @@ const Footer = () => {
             <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)' }}>
                 <div className="container py-3">
                     <div className="d-flex flex-wrap justify-content-between align-items-center gap-2">
-                        <small>© 2024 LaptopZone. All rights reserved.</small>
+                        <small>© 2026 LaptopZone. All rights reserved.</small>
                         <div className="d-flex gap-2">
                             {['visa', 'credit-card', 'paypal', 'cash-stack'].map(icon => (
                                 <span key={icon} className="badge rounded-pill px-2 py-1" style={{ background: 'rgba(255,255,255,0.1)', color: '#94a3b8' }}>
