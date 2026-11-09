@@ -48,6 +48,75 @@
 - **Quản lý đơn hàng (`AdminOrders`):** Lọc đơn hàng theo trạng thái, xem chi tiết mặt hàng trong đơn và cập nhật trạng thái đơn hàng theo quy trình (`Pending` ➔ `Processing` ➔ `Delivered` / `Cancelled`).
 - **Quản lý đánh giá (`AdminReviews`):** Xem toàn bộ đánh giá của khách hàng, lọc theo số sao, ẩn/hiện (`hidden`) hoặc xóa các đánh giá không phù hợp.
 
+### 1.3. Cấu trúc thư mục dự án (Folder Structure)
+
+```text
+lapzone-gr3/
+├── api/
+│   └── db.json                    # Mock database for JSON Server (REST API)
+├── public/
+│   └── index.html                 # Root HTML template
+├── src/
+│   ├── components/                # Reusable UI & Guard components
+│   │   ├── Header.jsx             # Top navigation bar, cart badge & user menu
+│   │   ├── Footer.jsx             # Site footer with links & contact info
+│   │   ├── ProductCard.jsx        # Product item card with quick add-to-cart
+│   │   ├── ProtectedRoute.jsx     # Route guards (ProtectedRoute & AdminRoute)
+│   │   └── StarRating.jsx         # Interactive/read-only 5-star rating component
+│   ├── context/                   # Global state management (React Context API)
+│   │   ├── AuthContext.js         # Authentication state & localStorage persistence
+│   │   └── CartContext.js         # Shopping cart state & localStorage persistence
+│   ├── pages/                     # Application page views
+│   │   ├── admin/                 # Admin Portal pages
+│   │   │   ├── AdminLayout.jsx    # Admin sidebar layout & nested route Outlet
+│   │   │   ├── Dashboard.jsx      # Revenue analytics, stats cards & recent orders
+│   │   │   ├── AdminProducts.jsx  # Products CRUD, specs editor & image upload
+│   │   │   ├── AdminCategories.jsx# Categories CRUD & auto-slug generator
+│   │   │   ├── AdminOrders.jsx    # Order management & status workflow
+│   │   │   └── AdminReviews.jsx   # Customer review moderation (hide/show/delete)
+│   │   ├── Home.jsx               # Landing page (Hero, Brands, Categories, Flash Sale)
+│   │   ├── Products.jsx           # Product catalog (Search, Multi-filter, Sort, Pagination)
+│   │   ├── ProductDetail.jsx      # Product specs, image gallery & customer reviews
+│   │   ├── Cart.jsx               # Shopping cart management
+│   │   ├── Checkout.jsx           # Delivery validation & COD order placement
+│   │   ├── Login.jsx              # User/Admin login page
+│   │   ├── Register.jsx           # User registration page
+│   │   ├── Profile.jsx            # User profile & password update
+│   │   └── Orders.jsx             # Customer order history & order cancellation
+│   ├── services/                  # API service layer
+│   │   └── api.js                 # Fetch wrapper & CRUD endpoints for JSON Server
+│   ├── App.css                    # Custom global styles & responsive utilities
+│   ├── App.js                     # Main router configuration & Context providers
+│   ├── index.css                  # Base stylesheet
+│   └── index.js                   # Application entry point
+├── package.json                   # Dependencies and npm scripts
+└── README.md                      # Project documentation
+```
+
+### 1.4. Sơ đồ luồng dữ liệu (Data Flow Diagram)
+
+**Explanation of Flow:**
+1. **UI Component** triggers an action/event (e.g., `fetchProducts()`, `login()`, `addToCart()`, `createOrder()`).
+2. That action is handled by an **Async Handler / Context Method** (`AuthContext`, `CartContext`, or `useEffect` / `useCallback`), which performs the API call.
+3. The **API Service (`src/services/api.js`)** sends the HTTP request (`fetch: GET / POST / PUT / DELETE`) to **JSON Server (`api/db.json`)**.
+4. The **API Response** (or error) is returned and handled by the **State & Storage Updater** (`setUser`, `setCartItems`, `setProducts` + `localStorage`).
+5. **Context Store & Component State** are updated, and **UI Components** automatically reflect new data via `useAuth()`, `useCart()`, and React state.
+
+```mermaid
+flowchart TD
+    A["UI Component<br/>(Home, Products, Cart, Checkout, Admin...)"] --> B[("Action / Event<br/>(fetchProducts, login, addToCart...)")]
+    B --> C["Async Handler & Context Method<br/>(AuthContext, CartContext, useEffect)"]
+    C --> D["API Request (src/services/api.js)<br/>fetch: GET / POST / PUT / DELETE"]
+    D --> E["API Response<br/>(JSON Server: api/db.json)"]
+    E --> F["State & Storage Updater<br/>(setUser, setCartItems, setProducts + localStorage)"]
+    F --> G["Context Store & State Updated<br/>(AuthProvider, CartProvider, Page State)"]
+    G --> H["Component reads state via<br/>useAuth() / useCart() / useState"]
+
+    classDef blueBox fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#0f172a,font-weight:bold;
+    class A,B,C,D,E,F,G,H blueBox;
+    linkStyle default stroke:#000000,stroke-width:2px;
+```
+
 ---
 
 ## 2. Hướng Dẫn Cài Đặt & Chạy Dự Án
