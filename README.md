@@ -93,30 +93,6 @@ lapzone-gr3/
 └── README.md                      # Project documentation
 ```
 
-### 1.4. Sơ đồ luồng dữ liệu (Data Flow Diagram)
-
-**Explanation of Flow:**
-1. **UI Component** triggers an action/event (e.g., `fetchProducts()`, `login()`, `addToCart()`, `createOrder()`).
-2. That action is handled by an **Async Handler / Context Method** (`AuthContext`, `CartContext`, or `useEffect` / `useCallback`), which performs the API call.
-3. The **API Service (`src/services/api.js`)** sends the HTTP request (`fetch: GET / POST / PUT / DELETE`) to **JSON Server (`api/db.json`)**.
-4. The **API Response** (or error) is returned and handled by the **State & Storage Updater** (`setUser`, `setCartItems`, `setProducts` + `localStorage`).
-5. **Context Store & Component State** are updated, and **UI Components** automatically reflect new data via `useAuth()`, `useCart()`, and React state.
-
-```mermaid
-flowchart TD
-    A["UI Component<br/>(Home, Products, Cart, Checkout, Admin...)"] --> B[("Action / Event<br/>(fetchProducts, login, addToCart...)")]
-    B --> C["Async Handler & Context Method<br/>(AuthContext, CartContext, useEffect)"]
-    C --> D["API Request (src/services/api.js)<br/>fetch: GET / POST / PUT / DELETE"]
-    D --> E["API Response<br/>(JSON Server: api/db.json)"]
-    E --> F["State & Storage Updater<br/>(setUser, setCartItems, setProducts + localStorage)"]
-    F --> G["Context Store & State Updated<br/>(AuthProvider, CartProvider, Page State)"]
-    G --> H["Component reads state via<br/>useAuth() / useCart() / useState"]
-
-    classDef blueBox fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#0f172a,font-weight:bold;
-    class A,B,C,D,E,F,G,H blueBox;
-    linkStyle default stroke:#000000,stroke-width:2px;
-```
-
 ---
 
 ## 2. Hướng Dẫn Cài Đặt & Chạy Dự Án
